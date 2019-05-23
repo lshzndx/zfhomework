@@ -21,8 +21,8 @@ export default function createSagaMiddleware() {
         return dispatch => {
             const run = (generator, callback) => {
                 const it = typeof generator[Symbol.iterator] === 'function' ? generator : generator()
-                !function next(action) {
-                    let {value: effect, done} = it.next(action)
+                !function next(value) {
+                    let {value: effect, done} = it.next()
                     if (!done) {
                         if (typeof effect[Symbol.iterator] === 'function') run(effect), next()
                         else if (typeof effect.then === 'function') effect.then(next)
@@ -54,7 +54,7 @@ export default function createSagaMiddleware() {
                                     effect.generators.forEach(generator => run(generator, once))
                                     break
                                 case 'CALL':
-                                    run(fn), next()
+                                    effect.fn(...effect.args), next()
                                     break
                                 case 'FORK':
                                     run(effect.generator), next()
