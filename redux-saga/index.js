@@ -10,7 +10,7 @@ const createChannel = () => {
     }
     const publish = action => {
         const callbacks = subscribers[action.type]
-        callbacks && callbacks.forEach(callback => callback(action)) && (delete subscribers[action.type])
+        callbacks && callbacks.forEach(callback => callback(action)), delete subscribers[action.type]
     }
     return {subscribe, publish}
 }
