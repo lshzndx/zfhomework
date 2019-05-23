@@ -14,8 +14,5 @@ export default (...middlewares) => createStore => reducers => {
   }
   const chain = middlewares.map(middleware => middleware(middlewareApi))
   dispatch = compose(chain)(store.dispatch)
-  return {
-    ...store,
-    dispatch
-  }
+  return {...store, dispatch}
 }
