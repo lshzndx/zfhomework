@@ -3,14 +3,14 @@
  * by liushuai
  */
 import { INIT } from './types'
-export default (reducers, preloadedState) => {
-  let currentListeners = []
-  let currentReducers = reducers
+export default (reducer, preloadedState) => {
+  const currentListeners = []
+  const currentReducer = reducer
   let currentState = preloadedState
 
   const getState = () => currentState
   const dispatch = action => {
-    currentState = currentReducers(currentState, action)
+    currentState = currentReducer(currentState, action)
     currentListeners.forEach(listener => listener())
   }
   const subscribe = listener =>{
@@ -26,9 +26,5 @@ export default (reducers, preloadedState) => {
   }
 
   dispatch({type: INIT})
-  return {
-    getState,
-    dispatch,
-    subscribe
-  }
+  return {getState, dispatch, subscribe}
 }
