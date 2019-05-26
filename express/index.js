@@ -91,4 +91,4 @@ const express = () => {
   return app
 }
 
-module.export = express
+module.exports = express
