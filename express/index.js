@@ -12,7 +12,7 @@ const express = () => {
   const app = (req, res) => {
     const routes = []
     const {pathname} = url.parse(req.url)
-    const requestMethod = req.method.roLowerCase()
+    const requestMethod = req.method.toLowerCase()
     let index = 0
     !function next(error) {
       if (index === routes.length) return
@@ -53,7 +53,7 @@ const express = () => {
   }
   [...methods, 'all'].forEach(method => {
     app[method] = (path, callback) => {
-      if (path.includs(':')) {
+      if (path.includes(':')) {
         const keys = []
         path.repalce(/:([^\/]*)/g, (...args) => {
           keys.push(args[1])
@@ -62,7 +62,7 @@ const express = () => {
         path = new RegExp(path)
         path.keys = keys
       }
-      let middleware = {path, method, callback}
+      const middleware = {path, method, callback}
       routes.push(middleware)
 
     }
