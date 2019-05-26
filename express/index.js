@@ -15,7 +15,7 @@ const express = () => {
     const requestMethod = req.method.roLowerCase()
     let index = 0
     !function next(error) {
-      if (index === app.length) return
+      if (index === routes.length) return
       const middleware = routes[index++]
       let {path, callback, method} = middleware
       if (error) {
@@ -24,7 +24,7 @@ const express = () => {
         return next(error)
       }
       if (method === 'middleware') {
-        if (path = '/' || path === pathname || pathname.startsWith(path, '/'))
+        if (path === '/' || path === pathname || pathname.startsWith(path, '/'))
           return callback(req, res, next)
         return next()
       }
@@ -55,9 +55,9 @@ const express = () => {
     app[method] = (path, callback) => {
       if (path.includs(':')) {
         const keys = []
-        path.repalce(/:([^\/])/g, (...args) => {
-          params.push(args[1])
-          return `([^\/])`
+        path.repalce(/:([^\/]*)/g, (...args) => {
+          keys.push(args[1])
+          return `([^\/]*)`
         })
         path = new RegExp(path)
         path.keys = keys
@@ -82,6 +82,8 @@ const express = () => {
           if (err) return next(err)
           res.end(data)
         })
+      }else {
+        next()
       }
     })
   }
