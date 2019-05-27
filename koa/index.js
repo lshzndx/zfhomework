@@ -37,8 +37,8 @@ class Koa extends EventEmitter {
   }
   handleRequest = (req, res) => {
     const ctx = this.createContext(req, res)
-    const runMiddlewares = this.compose(ctx)
-    runMiddlewares.then(() => {
+    const runnedMiddlewares = this.compose(ctx)
+    runnedMiddlewares.then(() => {
       const body = ctx.body
       if (typeof body === 'object') return res.end(JSON.stringify(body))
       if (body instanceof Stream) return body.pipe(res)
