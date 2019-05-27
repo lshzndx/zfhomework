@@ -31,7 +31,7 @@ class Koa extends EventEmitter {
   compose(ctx) {
     return !function next(index) {
       if (index === this.middlewares.length) return Promise.resolve()
-      const middleware = this.middleware[index++]
+      const middleware = this.middlewares[index++]
       return Promise.resolve(middleware(ctx, () => next(index)))
     }(0)
   }
@@ -42,7 +42,7 @@ class Koa extends EventEmitter {
       const body = ctx.body
       if (typeof body === 'object') return res.end(JSON.stringify(body))
       if (body instanceof Stream) return body.pipe(res)
-      return res.end(body)
+      res.end(body)
     }).catch(err => this.emit('error', err))
   }
   listen() {
