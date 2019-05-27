@@ -43,7 +43,7 @@ class Koa extends EventEmitter {
       if (typeof body === 'object') return res.end(JSON.stringify(body))
       if (body instanceof Stream) return body.pipe(res)
       return res.end(body)
-    })
+    }).catch(err => this.emit('error', err))
   }
   listen() {
     const server = http.createServer(this.handleRequest)
