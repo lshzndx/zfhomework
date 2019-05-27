@@ -6,7 +6,7 @@ import React, { Component } from 'react'
 import bindActionCreators from './bindActionCreators'
 import ReduxContext from './context'
 export default (mapStateToProps, mapDispatchToProps) => {
-  return function (WrappedComponent) {
+  return WrappedComponent => {
     return class extends Component {
       static contextType = ReduxContext
 
