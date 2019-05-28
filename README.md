@@ -9,10 +9,10 @@
 - 实现express-session中间件
 
 ## practise
-- 实现完整的redux并通过测试
-- 实现完整的react-redux并通过测试
-- 实现完整的redux-saga并通过测试
-- 实现完整的express并通过测试
-- 实现完整的Koa并通过测试
-- 实现koa-router中间件并通过测试
+- 实现自己的redux并通过测试
+- 实现自己的react-redux并通过测试
+- 实现自己的redux-saga并通过测试
+- 实现自己的express并通过测试
+- 实现自己的Koa并通过测试
+- 实现自己的koa-router中间件并通过测试
 - 实现一个带有缓存功能的静态文件服务器并通过测试
