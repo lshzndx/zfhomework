@@ -51,6 +51,7 @@ const express = () => {
     const middleware = {path, callback, method: 'middleware'}
     routes.push(middleware)
   }
+
   [...methods, 'all'].forEach(method => {
     app[method] = (path, callback) => {
       if (path.includes(':')) {
@@ -64,13 +65,14 @@ const express = () => {
       }
       const middleware = {path, method, callback}
       routes.push(middleware)
-
     }
   })
+
   app.listen = (...args) => {
     const server = http.createServer(app)
     server.listen(...args)
   }
+
   app.static = dir => (req, res, next) => {
     const p = req.path
     const realPath = path.join(dir, p)
