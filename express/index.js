@@ -2,11 +2,12 @@
  * express 完整实现
  * by liushuai
  */
-const http = require('http')
-const url = require('url')
-const methods = require('methods')
+
 const fs = require('fs')
+const url = require('url')
 const path = require('path')
+const http = require('http')
+const methods = require('methods')
 
 const express = () => {
   const app = (req, res) => {
