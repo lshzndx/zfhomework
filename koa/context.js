@@ -1,4 +1,7 @@
 const context = {
+  get method() {
+    return this.request.method
+  },
   get url () {
     return this.request.url
   },
@@ -13,6 +16,9 @@ const context = {
   },
   set body(value) {
     this.response.body = value
+  },
+  set(key, value) {
+    this.response[key] = value
   }
 }
 

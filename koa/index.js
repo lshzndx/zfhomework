@@ -25,17 +25,18 @@ class Koa extends EventEmitter {
     ctx.request = this.request
     ctx.response = this.response
     ctx.req = ctx.request = req
-    ctx.res = ctx.response = res
+    ctx.res = ctx.response.res = res
     return ctx
   }
   compose(ctx) {
-    return !function next(index) {
+    const next = (index) => {
       if (index === this.middlewares.length) return Promise.resolve()
       const middleware = this.middlewares[index++]
       return Promise.resolve(middleware(ctx, () => next(index)))
-    }(0)
+    }
+    return next(0)
   }
-  handleRequest = (req, res) => {
+  handleRequest(req, res) {
     const ctx = this.createContext(req, res)
     const runnedMiddlewares = this.compose(ctx)
     runnedMiddlewares.then(() => {
@@ -46,7 +47,7 @@ class Koa extends EventEmitter {
     }).catch(err => this.emit('error', err))
   }
   listen() {
-    const server = http.createServer(this.handleRequest)
+    const server = http.createServer(this.handleRequest.bind(this))
     server.listen(...arguments)
   }
 }

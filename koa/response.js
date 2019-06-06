@@ -4,6 +4,9 @@ const response = {
   },
   get body() {
     return this._body
+  },
+  get(key) {
+    return this[key]
   }
 }
 
