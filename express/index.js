@@ -8,64 +8,53 @@ const url = require('url')
 const path = require('path')
 const http = require('http')
 const methods = require('methods')
-
+const inlineMiddleware = require('./inlineMiddleware')
 const express = () => {
+  const routes = []
   const app = (req, res) => {
-    const routes = []
-    const {pathname} = url.parse(req.url)
+    const {pathname} = url.parse(req.url, true)
     const requestMethod = req.method.toLowerCase()
     let index = 0
     !function next(error) {
       if (index === routes.length) return
-      const middleware = routes[index++]
-      let {path, callback, method} = middleware
+      const route = routes[index++]
+      let {path, callback, method} = route
       if (error) {
-        if (method === 'middleware' && callback.length === 4)
+        if (callback.length === 4)
           return callback(error, req, res, next)
         return next(error)
-      }
-      if (method === 'middleware') {
-        if (path === '/' || path === pathname || pathname.startsWith(path, '/'))
-          return callback(req, res, next)
-        return next()
       }
       if (path instanceof RegExp) {
         if (path.test(pathname)) {
           const result = pathname.match(path)
           const [, ...values] = result
-          req.params = path.keys.reduce((memo, key, index) => (memo[key] = values[index], memo), {})
+          req.params = req.keys.reduce((memo, key, index) => (memo[key] = values[index], memo), {})
           return callback(req, res)
         }
         return next()
       }
+      if ((path === pathname || path === '/') && method === 'middleware')
+        return callback(req, res, next)
       if ((path === pathname || path === '*') && (method === requestMethod) || method === 'all')
-        return callback(req, res)
+        return callback(req, res, next)
       return next()
     }()
   }
 
   app.use = (path, callback) => {
-    if (typeof callback !== 'function') {
-      callback = path
-      path = '/'
-    }
-    const middleware = {path, callback, method: 'middleware'}
-    routes.push(middleware)
+    if (typeof callback !== 'function') {callback = path, path = '/'}
+    routes.push({path, callback, method: 'middleware'})
   }
 
   [...methods, 'all'].forEach(method => {
     app[method] = (path, callback) => {
       if (path.includes(':')) {
         const keys = []
-        path.repalce(/:([^\/]*)/g, (...args) => {
-          keys.push(args[1])
-          return `([^\/]*)`
-        })
+        path.repalce(/:([^\/]*)/g, (...args) => (keys.push(args[1]), `([^\/]*)`))
         path = new RegExp(path)
         path.keys = keys
       }
-      const middleware = {path, method, callback}
-      routes.push(middleware)
+      routes.push({path, method, callback})
     }
   })
 
@@ -76,20 +65,15 @@ const express = () => {
 
   app.static = dir => (req, res, next) => {
     const p = req.path
-    const realPath = path.join(dir, p)
-    fs.stat(realPath, (err, stat) => {
-      if (err)
-        return next(err)
-      if (stat.isFile()) {
-        fs.readFile(realPath, (err, data) => {
-          if (err) return next(err)
-          res.end(data)
-        })
-      }else {
-        next()
-      }
-    })
+    const absPath = path.join(p, dir)
+    try {
+      fs.createReadStream(absPath).pipe(res)
+    }catch(e) {
+      next()
+    }
   }
+
+  app.use(inlineMiddleware)
 
   return app
 }
