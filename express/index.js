@@ -16,27 +16,37 @@ const express = () => {
     const requestMethod = req.method.toLowerCase()
     let index = 0
     !function next(error) {
-      if (index === routes.length) return
+      if (index === routes.length) return res.end('Not found')
       const route = routes[index++]
-      let {path, callback, method} = route
+      const {path, callback, method} = route
+      // console.log(path, pathname, method, requestMethod)
+
       if (error) {
+        console.log('error')
         if (callback.length === 4)
           return callback(error, req, res, next)
         return next(error)
       }
       if (path instanceof RegExp) {
+        console.log('if (path instanceof RegExp)')
         if (path.test(pathname)) {
           const result = pathname.match(path)
           const [, ...values] = result
           req.params = req.keys.reduce((memo, key, index) => (memo[key] = values[index], memo), {})
-          return callback(req, res)
+          return callback(req, res, next)
         }
         return next()
       }
-      if ((path === pathname || path === '/') && method === 'middleware')
+      if ((path === pathname || path === '/') && method === 'middleware') {
+        console.log('if middleware')
         return callback(req, res, next)
-      if ((path === pathname || path === '*') && (method === requestMethod) || method === 'all')
+      }
+
+      if ((path === pathname || path === '*') && (method === requestMethod || method === 'all')) {
+        console.log('if route')
         return callback(req, res, next)
+
+      }
       return next()
     }()
   }
@@ -64,13 +74,11 @@ const express = () => {
   }
 
   app.static = dir => (req, res, next) => {
-    const p = req.path
-    const absPath = path.join(p, dir)
-    try {
-      fs.createReadStream(absPath).pipe(res)
-    }catch(e) {
-      next()
-    }
+    const {pathname} = url.parse(req.url, true)
+    const absPath = path.join(__dirname, dir, pathname)
+    const rs = fs.createReadStream(absPath)
+    rs.pipe(res)
+    rs.on('error', err => next())
   }
 
   app.use(inlineMiddleware)
