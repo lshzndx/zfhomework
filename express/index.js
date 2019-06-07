@@ -19,16 +19,13 @@ const express = () => {
       if (index === routes.length) return res.end('Not found')
       const route = routes[index++]
       const {path, callback, method} = route
-      // console.log(path, pathname, method, requestMethod)
 
       if (error) {
-        console.log('error')
         if (callback.length === 4)
           return callback(error, req, res, next)
         return next(error)
       }
       if (path instanceof RegExp) {
-        console.log('if (path instanceof RegExp)')
         if (path.test(pathname)) {
           const result = pathname.match(path)
           const [, ...values] = result
@@ -37,16 +34,10 @@ const express = () => {
         }
         return next()
       }
-      if ((path === pathname || path === '/') && method === 'middleware') {
-        console.log('if middleware')
+      if ((path === pathname || path === '/') && method === 'middleware') 
         return callback(req, res, next)
-      }
-
-      if ((path === pathname || path === '*') && (method === requestMethod || method === 'all')) {
-        console.log('if route')
+      if ((path === pathname || path === '*') && (method === requestMethod || method === 'all'))
         return callback(req, res, next)
-
-      }
       return next()
     }()
   }
