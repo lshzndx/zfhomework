@@ -2,7 +2,6 @@
  * Promise对象，es6版本
  * by liushuai
  */
-
 class Promise {
   constructor(executor) {
     this.state = Promise.State.PENDING
@@ -28,7 +27,7 @@ class Promise {
           if (typeof onFulfilled === 'function') {
             try {
               let x = onFulfilled.call(null, this.value)
-              handlePromise([promise2, resolve, reject], x)
+              this._resolvePromise([promise2, resolve, reject], x)
             } catch (e) {
               reject(e)
             }
@@ -50,7 +49,7 @@ class Promise {
           if (typeof onRejected === 'function') {
             try {
               let x = onRejected.call(null, this.reason)
-              handlePromise([promise2, resolve, reject], x)
+              this._resolvePromise([promise2, resolve, reject], x)
             } catch (e) {
               reject(e)
             }
@@ -62,9 +61,47 @@ class Promise {
     }
   }
 
+  _resolvePromise([promise2, resolve, reject], x) {
+    if (x === promise2) {
+      return reject(new TypeError(`循环引用`))
+    }
+    if (x instanceof Promise) {
+      return x.then(resolve, reject)
+    }
+    if (typeof x === 'object' && x !== null || typeof x === 'function') {
+      let called = false
+      const then = x.then
+      if (typeof then === 'function') {
+        try {
+          then.call(x, y => {
+            if (!called) {
+              this._resolvePromise([promise2, resolve, reject], y)
+              called = true
+            }
+          }, r => {
+            if (!called) {
+              reject(r)
+              called = true
+            }
+          })
+        }catch(e) {
+          if (!called) {
+            reject(e)
+            called = true
+          }
+        }
+      }else {
+        resolve(x)
+      }
+
+      return
+    }
+    resolve(x)
+  }
+
   then(onFulfilled, onRejected) {
-    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : onFulfilled => onFulfilled
-    onRejected = typeof onRejected === 'function' ? onRejected : onRejected => {throw new Error(onRejected)}
+    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value
+    onRejected = typeof onRejected === 'function' ? onRejected : err => {throw err}
     let promise2
     promise2 = new Promise((resolve, reject) => {
       this.onFulfilledCallbacks = [...this.onFulfilledCallbacks, [onFulfilled, resolve, reject, promise2]]
@@ -86,12 +123,10 @@ class Promise {
     if (iterable.length === 0) return Promise.resolve([])
     return new Promise((resolve, reject) => {
       let count = 0
-      let result = []
-      let onFulfilled = (i) => {
-        return d => {
-          result[i] = d
-          if (++count === iterable.length) resolve(result)
-        }
+      const result = []
+      const onFulfilled = index => value => {
+        result[index] = value
+        if (++count === iterable.length) resolve(result)
       }
       iterable.forEach((promise, index) => Promise.resolve(promise).then(onFulfilled(index), reject))
     })
@@ -105,12 +140,12 @@ class Promise {
     })
   }
 
-  static resolve(d) {
-    return new Promise(resolve => resolve(d))
+  static resolve(value) {
+    return new Promise(resolve => resolve(value))
   }
 
-  static reject(r) {
-    return new Promise((resolve,reject) => reject(r))
+  static reject(reason) {
+    return new Promise((resolve,reject) => reject(reason))
   }
 }
 
@@ -120,40 +155,6 @@ Promise.State = {
   REJECTED: 2
 }
 
-let handlePromise = ([promise2, resolve, reject], x) => {
-  if (x === promise2) {
-    return reject(new TypeError(`循环引用`))
-  }
-  if (x instanceof Promise) {
-    return x.then(resolve, reject)
-  }
-  if (typeof x === 'object' && x !== null || typeof x === 'function') {
-    let called = false
-    try {
-      const then = x.then
-      if (typeof then === 'function') {
-        then.call(x, y => {
-          if (!called) {
-            handlePromise([promise2, resolve, reject], y)
-            called = true
-          }
-        }, r => {
-          if (!called) {
-            reject(r)
-            called = true
-          }
-        })
-      }else {
-        resolve(x)
-      }
-    }catch(e) {
-      if (!called) 
-        reject(e)
-    }
-    return
-  }
-  resolve(x)
-}
 
 let p1 = new Promise((resolve, reject) => {
   setTimeout(() => {
