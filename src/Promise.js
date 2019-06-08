@@ -63,6 +63,8 @@ class Promise {
   }
 
   then(onFulfilled, onRejected) {
+    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : onFulfilled => onFulfilled
+    onRejected = typeof onRejected === 'function' ? onRejected : onRejected => {throw new Error(onRejected)}
     let promise2
     promise2 = new Promise((resolve, reject) => {
       this.onFulfilledCallbacks = [...this.onFulfilledCallbacks, [onFulfilled, resolve, reject, promise2]]
