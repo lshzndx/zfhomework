@@ -63,7 +63,10 @@ class Promise {
   }
 
   then(onFulfilled, onRejected) {
-    var promise2 = new Promise((resolve, reject) => {
+    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : onFulfilled => onFulfilled
+    onRejected = typeof onRejected === 'function' ? onRejected : onRejected => {throw new Error(onRejected)}
+    let promise2
+    promise2 = new Promise((resolve, reject) => {
       this.onFulfilledCallbacks = [...this.onFulfilledCallbacks, [onFulfilled, resolve, reject, promise2]]
       this.onRejectedCallbacks = [...this.onRejectedCallbacks, [onRejected, resolve, reject, promise2]]
     })
@@ -117,38 +120,39 @@ Promise.State = {
   REJECTED: 2
 }
 
-let handlePromise = (Promise2, x) => {
-  let [promise2, resolve, reject] = Promise2
-  if (typeof x === 'object' || typeof x === 'function') {
-    if (x instanceof Promise) {
-      if (x === promise2) return reject(new Error('TypeError'))
-      x.then(resolve, reject)
-    } else {
-      try {
-        let then = x.then
-        if (typeof then === 'function') {
-          let called = false
-          then.call(x, function (y) {
-            if (!called) {
-              called = true
-              handlePromise([promise2, resolve, reject], y)
-            }
-          }, function (r) {
-            if (!called) {
-              called = true
-              reject(r)
-            }
-          })
-        } else {
-          resolve(x)
-        }
-      } catch (e) {
-        reject(e)
-      }
-    }
-  } else {
-    resolve(x)
+let handlePromise = ([promise2, resolve, reject], x) => {
+  if (x === promise2) {
+    return reject(new TypeError(`循环引用`))
   }
+  if (x instanceof Promise) {
+    return x.then(resolve, reject)
+  }
+  if (typeof x === 'object' && x !== null || typeof x === 'function') {
+    let called = false
+    try {
+      const then = x.then
+      if (typeof then === 'function') {
+        then.call(x, y => {
+          if (!called) {
+            handlePromise([promise2, resolve, reject], y)
+            called = true
+          }
+        }, r => {
+          if (!called) {
+            reject(r)
+            called = true
+          }
+        })
+      }else {
+        resolve(x)
+      }
+    }catch(e) {
+      if (!called) 
+        reject(e)
+    }
+    return
+  }
+  resolve(x)
 }
 
 let p1 = new Promise((resolve, reject) => {
