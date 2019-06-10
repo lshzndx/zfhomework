@@ -17,30 +17,26 @@ class Promise {
 
   _resolve(x) {
     if (this.state === Promise.State.PENDING) {
-      // console.log(x === this, x)
       if (x === this) {
         throw new TypeError(`循环引用`)
       }
-      let called = false;
-      try {
-        const then = x && x['then'];
-        if (x !== null && typeof x === 'object' && typeof then === 'function') {
+      if (x !== null && typeof x === 'object' && typeof x.then === 'function') {
+        let called = false;
+        try {
+          const then = x.then
           then.call(x, x => {
             if (!called) {
-              this._resolve(x)
               called = true
+              this._resolve(x)
             }
           }, r => {
             if (!called) {
+              called = true
               this._reject(r)
-              called = true;
             }
           })
-          return
-        }
-      } catch (e) {
-        if (!called) {
-          this._reject(e);
+        } catch(e) {
+          this._reject(e)
         }
         return
       }
