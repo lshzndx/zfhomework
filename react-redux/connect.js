@@ -3,8 +3,8 @@
  * by liushuai
  */
 import React, { Component } from 'react'
-import bindActionCreators from './bindActionCreators'
 import ReduxContext from './context'
+import bindActionCreators from './bindActionCreators'
 export default (mapStateToProps, mapDispatchToProps) => {
   return WrappedComponent => {
     return class extends Component {

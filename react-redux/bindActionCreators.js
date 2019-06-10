@@ -4,11 +4,11 @@
  * @param {*} dispatch 
  * by liushuai
  */
-const bindActionCreator = (action, dispatch) => value => dispatch(action(value))
+const bindActionCreator = (action, dispatch) => payload => dispatch(action(payload))
 
 export default (actions, dispatch) => {
   if (typeof actions === 'object') 
-    return Object.keys(actions).reduce((obj, actionKey) => (obj[actionKey] = bindActionCreator(actions[actionKey], dispatch), obj), {} )
+    return Object.keys(actions).reduce((memo, actionKey) => (memo[actionKey] = bindActionCreator(actions[actionKey], dispatch), memo), {} )
   else if (typeof actions === 'function')
     return bindActionCreator(actions)
   
