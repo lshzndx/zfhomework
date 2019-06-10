@@ -6,7 +6,6 @@ class Promise {
   constructor(executor) {
     this.state = Promise.State.PENDING
     this.value = null
-    this.reason = null
     this.callbacks = []
     try {
       executor(this._resolve.bind(this), this._reject.bind(this))
@@ -49,7 +48,7 @@ class Promise {
   _reject(reason) {
     if (this.state === Promise.State.PENDING) {
       this.state = Promise.State.REJECTED
-      this.reason = reason
+      this.value = reason
       this._fire()
     }
   }
@@ -68,9 +67,9 @@ class Promise {
               }
             }else if (this.state === Promise.State.REJECTED) {
               if (typeof onRejected === 'function') {
-                resolve(onRejected.call(null, this.reason))
+                resolve(onRejected.call(null, this.value))
               }else {
-                reject(this.reason)
+                reject(this.value)
               }
             }
           }catch(e) {
@@ -83,8 +82,6 @@ class Promise {
   }
 
   then(onFulfilled, onRejected) {
-    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value
-    onRejected = typeof onRejected === 'function' ? onRejected : err => {throw err}
     return new Promise((resolve, reject) => {
       this.callbacks = [...this.callbacks, [onFulfilled, onRejected, resolve, reject]]
       this._fire()
