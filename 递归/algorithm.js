@@ -2,7 +2,7 @@
  * 常见算法的递归实现
  * by liushuai
  */
-const fs = require('fs')
+
 /**
  * 快速排序
  */
@@ -23,6 +23,7 @@ function perm(arr) {
 /**
  * commonjs
  */
+const fs = require('fs')
 const cachedModule = {}
 function req(moduleId) {
   if (cachedModule[moduleId]) return cachedModule[moduleId]
