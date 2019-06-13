@@ -54,6 +54,61 @@ function mkdirPromise(dir) {
   })
 }
 /**
+ * 异步递归删除目录（callback版）
+ */
+function rmdir(dir, callback) {
+  fs.stat(dir, (err, stat) => {
+    if (stat.isDirectory()) {
+      fs.rmdir(dir, err => {
+        if(err) {
+          fs.readdir(dir, (err, files) => {
+            let index = 0
+            const next = () => {
+              if (++index === files.length) 
+                rmdir(dir, callback)
+            }
+            files.forEach(file => {
+              const currentPath = path.resolve(dir, file)
+              rmdir(currentPath, next)
+            })
+          })
+          return
+        }
+        callback(null, `删除完毕`)
+      })
+    }else {
+      fs.unlink(dir, callback)
+    }
+  })
+}
+/**
+ * 异步递归删除目录（Promise版）
+ */
+function rmdirPromise(dir) {
+  return new Promise((resolve, reject) => {
+    fs.stat(dir, (err, stat) => {
+      if (stat.isDirectory()) {
+        fs.rmdir(dir, err => {
+          if (err) {
+            const promises = []
+            fs.readdir(dir, (err, files) => {
+              files.forEach(file => {
+                const current = path.resolve(dir, file)
+                const promise = rmdirPromise(current)
+                promises.push(promise)
+              })
+            })
+            return Promise.all(promises).then(() => rmdirPromise(dir).then(resolve, reject))
+          }
+          resolve()
+        })
+      }else {
+        fs.unlink(dir, resolve)
+      }
+    })
+  })
+}
+/**
  * commonjs
  */
 const path = require('path')
