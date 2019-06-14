@@ -19,9 +19,7 @@ function quickSort(arr) {
 function mergeSort(arr) {
   if (arr.length <= 1) return arr
   if (arr.length === 2) {
-    if (arr[0] > arr[1]) {
-      return [arr[1], arr[0]]
-    }
+    if (arr[0] > arr[1]) return [arr[1], arr[0]]
     return arr
   }
   const middle = Math.ceil(arr.length / 2)
@@ -37,10 +35,8 @@ function merge(left, right) {
   while(len--) {
     let l = left[0] === undefined ? Number.POSITIVE_INFINITY : left[0]
     let r = right[0] === undefined ? Number.POSITIVE_INFINITY : right[0]
-    if (l < r) 
-      arr.push(left.shift())
-    else
-      arr.push(right.shift())
+    if (l < r) arr.push(left.shift())
+    else arr.push(right.shift())
   }
   return arr
 }
@@ -48,26 +44,26 @@ function merge(left, right) {
  * 堆排序
  */
 function heapSort(arr) {
-  buildMaxHeap(arr, arr.length)
+  buildMaxHeap(arr)
   for(let size = arr.length; size > 0; size--) {
     swap(arr, 0, size - 1)
-    maxHeapify(arr, 0, size - 1) 
+    maxHeapify(arr, 0, size - 1)
   }
 }
-function buildMaxHeap(arr, size) {
-  const L = Math.floor(size / 2)
-  for(let i = L - 1; i >= 0; i--) {
-    maxHeapify(arr, i, size)
+function buildMaxHeap(arr) {
+  const bottom = Math.floor(arr.length / 2)
+  for(let node = bottom - 1; node >= 0; node--) {
+    maxHeapify(arr, node, arr.length)
   }
 }
-function maxHeapify(arr, start, size) {
-  let max = start
-  const l = start * 2 + 1
-  const r = start * 2 + 2
+function maxHeapify(arr, node, size) {
+  let max = node
+  const l = node * 2 + 1
+  const r = node * 2 + 2
   if(l < size && arr[l] > arr[max]) max = l
-  if(r < size && arr[r] > arr[max]) max = r 
-  if(max === start) return
-  swap(arr, start, max)
+  if(r < size && arr[r] > arr[max]) max = r
+  if(max === node) return
+  swap(arr, node, max)
   maxHeapify(arr, max, size)
 }
 const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
@@ -122,7 +118,7 @@ function rmdir(dir, callback) {
           fs.readdir(dir, (err, files) => {
             let index = 0
             const next = () => {
-              if (++index === files.length) 
+              if (++index === files.length)
                 rmdir(dir, callback)
             }
             files.forEach(file => {
