@@ -45,6 +45,33 @@ function merge(left, right) {
   return arr
 }
 /**
+ * 堆排序
+ */
+function heapSort(arr) {
+  buildMaxHeap(arr, arr.length)
+  for(let size = arr.length; size > 0; size--) {
+    swap(arr, 0, size - 1)
+    maxHeapify(arr, 0, size - 1) 
+  }
+}
+function buildMaxHeap(arr, size) {
+  const L = Math.floor(size / 2)
+  for(let i = L - 1; i >= 0; i--) {
+    maxHeapify(arr, i, size)
+  }
+}
+function maxHeapify(arr, start, size) {
+  let max = start
+  const l = start * 2 + 1
+  const r = start * 2 + 2
+  if(l < size && arr[l] > arr[max]) max = l
+  if(r < size && arr[r] > arr[max]) max = r 
+  if(max === start) return
+  swap(arr, start, max)
+  maxHeapify(arr, max, size)
+}
+const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
+/**
  * 全排列
  */
 function perm(arr) {
