@@ -14,6 +14,37 @@ function quickSort(arr) {
   return [...quickSort(smaller), first, ...quickSort(larger)]
 }
 /**
+ * 归并排序
+ */
+function mergeSort(arr) {
+  if (arr.length <= 1) return arr
+  if (arr.length === 2) {
+    if (arr[0] > arr[1]) {
+      return [arr[1], arr[0]]
+    }
+    return arr
+  }
+  const middle = Math.ceil(arr.length / 2)
+  let left = arr.slice(0, middle)
+  let right = arr.slice(middle)
+  left = mergeSort(left)
+  right = mergeSort(right)
+  return merge(left, right)
+}
+function merge(left, right) {
+  let len = left.length + right.length
+  const arr = []
+  while(len--) {
+    let l = left[0] === undefined ? Number.POSITIVE_INFINITY : left[0]
+    let r = right[0] === undefined ? Number.POSITIVE_INFINITY : right[0]
+    if (l < r) 
+      arr.push(left.shift())
+    else
+      arr.push(right.shift())
+  }
+  return arr
+}
+/**
  * 全排列
  */
 function perm(arr) {
@@ -173,7 +204,7 @@ const isBalance = str => [...str].reduce((stack, cur) => (match(stack[stack.leng
 /**
  * 数组展平
  */
-const flatten = arr => ( arr.reduce((pre, cur) => ([...pre, ...(Array.isArray(cur) ? flatten(cur) : [cur])]), []))
+const flatten = arr => ( arr.reduce((flattened, cur) => ([...flattened, ...(Array.isArray(cur) ? flatten(cur) : [cur])]), []))
 /**
  * 树深度优先遍历（先序|中序|后序）
  * class Tree {
