@@ -4,6 +4,40 @@
  */
 
 /**
+ * 八皇后问题
+ * 共计92组解 console.log(queen()) -> 皇后的摆放坐标
+ */
+const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
+function queen() {
+  const queens = [0, 1, 2, 3, 4, 5, 6, 7] // 数组中每一项的值代表行，其坐标代表列
+  let permedQueens = pairSwap(queens) // 任意两两交换的所有组合
+  permedQueens = permedQueens.filter(queen => { // 只需要过滤正斜线和反斜线，不需要考虑行和列
+    let slash = queen.map((row, col) => row - col)
+    let backlash = queen.map((row, col) => row + col)
+    if (new Set(slash).size < slash.length || new Set(backlash).size < backlash.length)
+      return false
+    return true
+  }).map(queen => queen.map((row, col) => [row, col]))
+  return permedQueens
+}
+function pairSwap(arr) {
+  if (arr.length <= 1) return [arr]
+  let result = []
+  for (let i = 0; i < arr.length; i++) {
+    swap(arr, 0, i)
+    let value = arr[i]
+    let newArr = arr.slice()
+    newArr.splice(i, 1)
+    let subResult = pairSwap(newArr).map(arr => {
+      arr.splice(i, 0, value)
+      return arr
+    })
+    result = [...result, ...subResult]
+    swap(arr, 0, i)
+  }
+  return result
+}
+/**
  * 快速排序
  */
 function quickSort(arr) {
