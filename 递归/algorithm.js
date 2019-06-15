@@ -32,9 +32,10 @@ function mergeSort(arr) {
 function merge(left, right) {
   let len = left.length + right.length
   const arr = []
+  let l, r
   while(len--) {
-    let l = left[0] === undefined ? Number.POSITIVE_INFINITY : left[0]
-    let r = right[0] === undefined ? Number.POSITIVE_INFINITY : right[0]
+    l = left[0] === undefined ? Number.POSITIVE_INFINITY : left[0]
+    r = right[0] === undefined ? Number.POSITIVE_INFINITY : right[0]
     if (l < r) arr.push(left.shift())
     else arr.push(right.shift())
   }
@@ -67,6 +68,23 @@ function maxHeapify(arr, node, size) {
   maxHeapify(arr, max, size)
 }
 const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
+/**
+ * 硬币最小找零
+ * amount = 100 -> [50, 50]
+ * amount = 20 -> [20]
+ */
+function makeChange(amount) {
+  const coins = [1, 10, 20, 50]
+  let minResult = [], nextAmount, nextMinResult
+  coins.forEach(value => {
+    nextAmount = amount - value
+    if (nextAmount >= 0)
+      nextMinResult = makeChange(nextAmount)
+    if (nextAmount >= 0 && (nextMinResult.length < minResult.length -1 || !minResult.length) && (nextAmount.length || !nextAmount))
+      minResult = [value, ...nextMinResult]
+  })
+  return minResult
+}
 /**
  * 全排列
  */
