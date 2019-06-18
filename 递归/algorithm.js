@@ -3,6 +3,13 @@
  * by liushuai
  */
 
+ /**
+ * 全排列
+ */
+function perm(arr) {
+  if (arr.length <= 1) return [arr]
+  return arr.map((a, i) => (perm([...arr.slice(0, i), ...arr.slice(i + 1)]).map(permItem => [a, ...permItem]))).reduce((permResultA, permResultB) => ([...permResultA, ...permResultB]))
+}
 /**
  * 八皇后问题
  * 共计92组解 console.log(queen()) -> 皇后的摆放坐标
@@ -10,38 +17,42 @@
 const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
 function queen() {
   const queen = [0, 1, 2, 3, 4, 5, 6, 7] // 数组中每一项的值代表行，其坐标代表列
-  let permedQueens = pairSwap(queen) // 任意两两交换的所有组合
-  let result = permedQueens.filter(queen => { // 只需要过滤正斜线和反斜线，不需要考虑行和列
-    let slash = queen.map((row, col) => row - col)
-    let backlash = queen.map((row, col) => row + col)
+  const permedQueens = perm(queen) // 任意两两交换的所有组合
+  const result = permedQueens.filter(queen => { // 只需要过滤正斜线和反斜线，不需要考虑行和列
+    const slash = queen.map((row, col) => row - col)
+    const backlash = queen.map((row, col) => row + col)
     if (new Set(slash).size < slash.length || new Set(backlash).size < backlash.length)
       return false
     return true
   }).map(queen => queen.map((row, col) => [row, col]))
   return result
 }
-function pairSwap(arr) {
-  if (arr.length <= 1) return [arr]
-  let result = []
-  for (let i = 0; i < arr.length; i++) {
-    swap(arr, 0, i)
-    let value = arr[i]
-    let newArr = arr.slice()
-    newArr.splice(i, 1)
-    let subResult = pairSwap(newArr).map(arr => {
-      arr.splice(i, 0, value)
-      return arr
-    })
-    result = [...result, ...subResult]
-    swap(arr, 0, i)
-  }
-  return result
+/**
+ * 硬币最小找零
+ * amount = 100 -> [50, 50]
+ * amount = 20 -> [20]
+ */
+function makeChange(amount) {
+  const coins = [1, 5, 10, 20, 50]
+  let minResult = [], nextAmount, nextMinResult
+  coins.forEach(value => {
+    nextAmount = amount - value
+    if (nextAmount >= 0)
+      nextMinResult = makeChange(nextAmount)
+    if (nextAmount >= 0 && (nextMinResult.length < minResult.length -1 || !minResult.length) && (nextAmount.length || !nextAmount))
+      minResult = [value, ...nextMinResult]
+  })
+  return minResult
 }
+/**
+ * 数组展平
+ */
+const flatten = arr => ( arr.reduce((flattened, cur) => ([...flattened, ...(Array.isArray(cur) ? flatten(cur) : [cur])]), []))
 /**
  * 快速排序
  */
 function quickSort(arr) {
-  if (arr.length === 0) return arr
+  if (arr.length <= 1) return arr
   const [first, ...rest] = arr
   const larger = [], smaller = []
   rest.forEach(value => value > first ? larger.push(value) : smaller.push(value))
@@ -103,30 +114,6 @@ function maxHeapify(arr, node, size) {
 }
 const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
 /**
- * 硬币最小找零
- * amount = 100 -> [50, 50]
- * amount = 20 -> [20]
- */
-function makeChange(amount) {
-  const coins = [1, 10, 20, 50]
-  let minResult = [], nextAmount, nextMinResult
-  coins.forEach(value => {
-    nextAmount = amount - value
-    if (nextAmount >= 0)
-      nextMinResult = makeChange(nextAmount)
-    if (nextAmount >= 0 && (nextMinResult.length < minResult.length -1 || !minResult.length) && (nextAmount.length || !nextAmount))
-      minResult = [value, ...nextMinResult]
-  })
-  return minResult
-}
-/**
- * 全排列
- */
-function perm(arr) {
-  if (arr.length <= 1) return [arr]
-  return arr.map((a, i) => (perm([...arr.slice(0, i), ...arr.slice(i + 1)]).map(permItem => [a, ...permItem]))).reduce((permResultA, permResultB) => ([...permResultA, ...permResultB]))
-}
-/**
  * 异步递归创建目录（基于callback）(为突出递归逻辑实现，不考虑边界条件)
  * a/b/c -> - a
  *            - b
@@ -169,10 +156,7 @@ function rmdir(dir, callback) {
         if(err) {
           fs.readdir(dir, (err, files) => {
             let index = 0
-            const next = () => {
-              if (++index === files.length)
-                rmdir(dir, callback)
-            }
+            const next = () => { if (++index === files.length) rmdir(dir, callback) }
             files.forEach(file => {
               const currentPath = path.resolve(dir, file)
               rmdir(currentPath, next)
@@ -182,9 +166,8 @@ function rmdir(dir, callback) {
         }
         callback(null, `删除完毕`)
       })
-    }else {
+    }else
       fs.unlink(dir, callback)
-    }
   })
 }
 /**
@@ -237,8 +220,8 @@ function define(moduleName, dependencies, factory) {
   factory.dependencies = dependencies
   factories[moduleName] = factory
 }
-function require(moduleNames, callback) {
-  const result = moduleNames.map(moduleName => {
+function require(dependedModules, callback) {
+  const result = dependedModules.map(moduleName => {
     const factory = factories[moduleName]
     const dependencies = factory.dependencies
     return require(dependencies, factory)
@@ -263,7 +246,7 @@ function deepClone(obj) {
  */
 function deepCompare(a, b) {
   if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return a === b
-  if (a instanceof Date || b instanceof Date) return a.getTime() === b.getTime()
+  if (a instanceof Date || b instanceof Date) return (a.getTime && a.getTime()) === (b.getTime && b.getTime())
   if (a instanceof RegExp || b instanceof RegExp) return a.toString() === b.toString()
   const keysA = Object.keys(a)
   const keysB = Object.keys(b)
@@ -276,10 +259,6 @@ function deepCompare(a, b) {
  */
 const match = (left, right) => left === '(' && right === ')' || left === '{' && right === '}' || left === '[' && right === ']'
 const isBalance = str => [...str].reduce((stack, cur) => (match(stack[stack.length - 1], cur) ? stack.pop() : stack.push(cur), stack), []).length === 0
-/**
- * 数组展平
- */
-const flatten = arr => ( arr.reduce((flattened, cur) => ([...flattened, ...(Array.isArray(cur) ? flatten(cur) : [cur])]), []))
 /**
  * 树深度优先遍历（先序|中序|后序）
  * class Tree {
