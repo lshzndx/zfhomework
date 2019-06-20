@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /**
  * redux-saga核心逻辑
  * by liushuai
