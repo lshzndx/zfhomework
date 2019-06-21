@@ -21,7 +21,7 @@ export function* watchIncrementAsync() {
   yield takeEvery(INCREMENT1ASYNC, incrementAsync)
 }
 
-export function* rootSaga2 () {
+export function* rootSaga () {
   yield all([logSaga, watchIncrementAsync])
 }
 
@@ -35,7 +35,7 @@ export function* delaySaga2() {
   console.log(400)
 }
 
-export function* rootSaga() {
+export function* rootSaga2() {
   yield all([delaySaga1, delaySaga2])
   console.log('race')
 }
