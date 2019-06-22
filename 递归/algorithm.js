@@ -28,6 +28,23 @@ function queen() {
   return result
 }
 /**
+ * 01背包问题
+ * @param {*} goods Array<typeof {weight, value}>
+ * @param {*} capacity number
+ */
+function pack(goods, capacity) {
+  let preMax = [], currentMax = [], nextCapacity
+  goods.forEach((g, i) => {
+    nextCapacity = capacity - g.weight
+    if (nextCapacity >= 0) {
+      currentMax = [g, ...pack(goods.slice(0, i).concat(goods.slice(i + 1)), nextCapacity)]
+      if ((preMax.length && preMax.reduce((value, next) => value + next.value, 0)) < (currentMax.length && currentMax.reduce((value, next) => value + next.value, 0))) 
+        preMax = currentMax
+    }
+  })
+  return preMax
+}
+/**
  * 硬币最小找零
  * amount = 100 -> [50, 50]
  * amount = 20 -> [20]
