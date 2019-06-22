@@ -16,7 +16,7 @@ function perm(arr) {
  */
 const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
 function queen() {
-  const queen = [0, 1, 2, 3, 4, 5, 6, 7] // 数组中每一项的值代表行，其坐标代表列
+  const queen = [0, 1, 2, 3, 4, 5, 6, 7] // 数组中每一项的值代表行，其下标代表列
   const permedQueens = perm(queen) // 任意两两交换的所有组合
   const result = permedQueens.filter(queen => { // 只需要过滤正斜线和反斜线，不需要考虑行和列
     const slash = queen.map((row, col) => row - col)
