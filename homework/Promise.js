@@ -16,9 +16,7 @@ class Promise {
 
   _resolve(x) {
     if (this.state === Promise.State.PENDING) {
-      if (x === this) {
-        throw new TypeError(`循环引用`)
-      }
+      if (x === this) throw new TypeError(`循环引用`)
       if (x !== null && typeof x === 'object' && typeof x.then === 'function') {
         let called = false;
         try {
@@ -35,7 +33,7 @@ class Promise {
             }
           })
         } catch(e) {
-          this._reject(e)
+          if (!called) this._reject(e)
         }
         return
       }
@@ -60,17 +58,15 @@ class Promise {
           const [onFulfilled, onRejected, resolve, reject] = callback
           try {
             if (this.state === Promise.State.FULFILLED) {
-              if (typeof onFulfilled === 'function') {
+              if (typeof onFulfilled === 'function') 
                 resolve(onFulfilled.call(null, this.value))
-              }else {
+              else 
                 resolve(this.value)
-              }
             }else if (this.state === Promise.State.REJECTED) {
-              if (typeof onRejected === 'function') {
+              if (typeof onRejected === 'function') 
                 resolve(onRejected.call(null, this.value))
-              }else {
+              else 
                 reject(this.value)
-              }
             }
           }catch(e) {
             reject(e)
@@ -78,7 +74,6 @@ class Promise {
         })
       }
     })
-
   }
 
   then(onFulfilled, onRejected) {
