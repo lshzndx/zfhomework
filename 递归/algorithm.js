@@ -124,7 +124,7 @@ function mkdir(dir, callbak) {
   fs.mkdir(dir, err => {
     if(err) {
       const parent = dir.split('/').slice(0, -1).join('/')
-      return mkdir(parent.join('/'), () => mkdir(dir, callbak))
+      return mkdir(parent, () => mkdir(dir, callbak))
     }
     callbak(null, `创建完成`)
   })
