@@ -29,7 +29,7 @@ function queen() {
 }
 /**
  * 01背包问题
- * @param {*} goods Array<typeof {weight, value}>
+ * @param {*} goods Array<{weight: number, value: number}>
  * @param {*} capacity number
  */
 function pack(goods, capacity) {
