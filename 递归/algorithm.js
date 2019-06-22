@@ -14,15 +14,13 @@ function perm(arr) {
  * 八皇后问题
  * 共计92组解 console.log(queen()) -> 皇后的摆放坐标
  */
-const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
 function queen() {
   const queen = [0, 1, 2, 3, 4, 5, 6, 7] // 数组中每一项的值代表行，其下标代表列
   const permedQueens = perm(queen) // 任意两两交换的所有组合
   const result = permedQueens.filter(queen => { // 只需要过滤正斜线和反斜线，不需要考虑行和列
     const slash = queen.map((row, col) => row - col)
     const backlash = queen.map((row, col) => row + col)
-    if (new Set(slash).size < slash.length || new Set(backlash).size < backlash.length)
-      return false
+    if (new Set(slash).size < slash.length || new Set(backlash).size < backlash.length) return false
     return true
   }).map(queen => queen.map((row, col) => [row, col]))
   return result
@@ -33,11 +31,11 @@ function queen() {
  * @param {*} capacity number
  */
 function pack(goods, capacity) {
-  let preMax = [], currentMax = [], nextCapacity
+  let preMax = [], currentMax = [], subCapacity
   goods.forEach((g, i) => {
-    nextCapacity = capacity - g.weight
-    if (nextCapacity >= 0) {
-      currentMax = [g, ...pack(goods.slice(0, i).concat(goods.slice(i + 1)), nextCapacity)]
+    subCapacity = capacity - g.weight
+    if (subCapacity >= 0) {
+      currentMax = [g, ...pack(goods.slice(0, i).concat(goods.slice(i + 1)), subCapacity)]
       if ((preMax.length && preMax.reduce((value, next) => value + next.value, 0)) < (currentMax.length && currentMax.reduce((value, next) => value + next.value, 0))) 
         preMax = currentMax
     }
@@ -51,13 +49,13 @@ function pack(goods, capacity) {
  */
 function makeChange(amount) {
   const coins = [1, 5, 10, 20, 50]
-  let minResult = [], nextAmount, nextMinResult
+  let minResult = [], subAmount, subMinResult
   coins.forEach(value => {
-    nextAmount = amount - value
-    if (nextAmount >= 0)
-      nextMinResult = makeChange(nextAmount)
-    if (nextAmount >= 0 && (nextMinResult.length < minResult.length -1 || !minResult.length) && (nextAmount.length || !nextAmount))
-      minResult = [value, ...nextMinResult]
+    subAmount = amount - value
+    if (subAmount >= 0)
+      subMinResult = makeChange(subAmount)
+    if (subAmount >= 0 && (subMinResult.length < minResult.length -1 || !minResult.length) && (subAmount.length || !subAmount))
+      minResult = [value, ...subMinResult]
   })
   return minResult
 }
@@ -106,6 +104,7 @@ function merge(left, right) {
 /**
  * 堆排序
  */
+const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
 function heapSort(arr) {
   buildMaxHeap(arr)
   for(let size = arr.length; size > 0; size--) {
@@ -129,7 +128,6 @@ function maxHeapify(arr, node, size) {
   swap(arr, node, max)
   maxHeapify(arr, max, size)
 }
-const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
 /**
  * 异步递归创建目录（基于callback）(为突出递归逻辑实现，不考虑边界条件)
  * a/b/c -> - a
@@ -199,8 +197,8 @@ function rmdirPromise(dir) {
             const promises = []
             fs.readdir(dir, (err, files) => {
               files.forEach(file => {
-                const current = path.resolve(dir, file)
-                const promise = rmdirPromise(current)
+                const currentPath = path.resolve(dir, file)
+                const promise = rmdirPromise(currentPath)
                 promises.push(promise)
               })
             })

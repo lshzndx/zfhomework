@@ -21,7 +21,7 @@ const dva = () => {
       reducer[namespace] = (state = state, action) => {
         const [actionNamespace, actionType] = action.type.split('/')
         if (actionNamespace === namespace) 
-          state = typeof reducers[action.type] === 'function' ? reducers[actionType](state) : state
+          state = typeof reducers[actionType] === 'function' ? reducers[actionType](state) : state
         return state
       }
       return reducer
