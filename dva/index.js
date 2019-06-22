@@ -19,8 +19,10 @@ const dva = () => {
   const start = root => {
     const reducers = currentModels.reduce((reducer, model) => {
       const {namespace, reducers, state} = model
-      const [, actionType] = action.type.split('/')
-      reducer[namespace] = (state = state, action) => typeof reducers[action.type] === 'function' ? reducers[action.type](state, actionType) : state
+      reducer[namespace] = (state = state, action) => {
+        const [, actionType] = action.type.split('/')
+        return typeof reducers[action.type] === 'function' ? reducers[action.type](state, actionType) : state
+      }
       return reducer
     }, {})
 
@@ -40,9 +42,7 @@ const dva = () => {
 
     sagaMiddleware.run(rootSaga)
 
-    reactDom.render(
-      <Provider store={store}><CurrentRootComponent /></Provider>, document.querySelector(root)
-    )
+    reactDom.render(<Provider store={store}><CurrentRootComponent /></Provider>, document.querySelector(root))
   }
 
   return {model, router, start}
