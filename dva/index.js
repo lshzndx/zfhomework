@@ -5,9 +5,8 @@
 import React from 'react'
 import reactDom from 'react-dom'
 import createSagaMiddleware from 'redux-saga'
-import * as effects from 'redux/saga/effects'
+import * as effects from 'redux-saga/effects'
 import { createStore, combineReducers, Provider } from 'redux'
-import reactDom from 'react-dom'
 const dva = () => {
   let CurrentRootComponent
   const currentModels = []
@@ -20,8 +19,10 @@ const dva = () => {
     const reducers = currentModels.reduce((reducer, model) => {
       const {namespace, reducers, state} = model
       reducer[namespace] = (state = state, action) => {
-        const [, actionType] = action.type.split('/')
-        return typeof reducers[action.type] === 'function' ? reducers[action.type](state, actionType) : state
+        const [actionNamespace, actionType] = action.type.split('/')
+        if (actionNamespace === namespace) 
+          state = typeof reducers[action.type] === 'function' ? reducers[actionType](state) : state
+        return state
       }
       return reducer
     }, {})
