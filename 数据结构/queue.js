@@ -46,11 +46,10 @@ class PriorityQueue extends Base {
   }
   enqueue(element, priority) {
     const queueelement = new QueueElement(element, priority)
-    if (this.isEmpty()) {
-      this.elements.push(queueelement)
-    }else {
+    if (this.isEmpty()) this.elements.push(queueelement)
+    else {
       let i = this.elements.length
-      while(i-- >= 0) {
+      while(--i >= 0) {
         const cur = this.elements[i]
         if (cur.priority >= priority) {
           this.elements.splice(i + 1, 0, queueelement)

@@ -50,26 +50,26 @@ class Set {
   }
   union(otherSet) {// 并集
     const unionedSet = new Set()
-    this.values().forEach(value => unionedSet.add(value))
-    otherSet.values().forEach(value => unionedSet.add(value))
+    let values = this.values()
+    for (let i = 0; i < values.length; i++) 
+      unionedSet.add(values[i])
+    values = otherSet.values()
+    for (let i = 0; i < values.length; i++)
+      unionedSet.add(values[i])
     return unionedSet
   }
   intersection(otherSet) {// 交集
     const intersectedSet = new Set()
-    this.values().forEach(value => {
-      if (otherSet.has(value)) {
-        intersectedSet.add(value)
-      }
-    })
+    const values = this.values()
+    for (let i = 0; i < values.length; i++) 
+      if (otherSet.has(values[i])) intersectedSet.add(values[i])
     return intersectedSet
   }
   difference(otherSet) {// 差集
     const differedSet = new Set()
-    this.values().forEach(value => {
-      if (!otherSet.has(value)) {
-        differedSet.add(value)
-      }
-    })
+    const values = this.values()
+    for (let i = 0; i < values.length; i++)
+      if (!otherSet.has(values[i])) differedSet.add(values[i])
     return differedSet
   }
   subset(otherSet) {// 子集

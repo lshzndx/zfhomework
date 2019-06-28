@@ -17,7 +17,7 @@ class Graph {
     this.adjList.get(vertex).push(neighbor)
     this.adjList.get(neighbor).push(vertex)
   }
-  bfs(vertex, callback) {
+  bfs(vertex, callback) {// Breadth-First Search
     const stateMap = this._initState()
     const queue = new Queue()
     queue.enqueue(vertex)
@@ -33,15 +33,13 @@ class Graph {
         }
       }
       stateMap[vertex] = 'traversed'
-      if (callback) {
-        callback(vertex)
-      }
+      if (callback) callback(vertex)
     }
   }
   BFS(vertex) {
     const stateMap = this._initState()
     const queue = new Queue()
-    const distances = [], predecessors = []
+    const distances = {}, predecessors = {}
     queue.enqueue(vertex)
     for (let i = 0; i < this.vertices.length; i++) {
       distances[this.vertices[i]] = 0
@@ -62,12 +60,9 @@ class Graph {
       }
       stateMap[predecessor] = 'traversed'
     }
-    return {
-      distances,
-      predecessors
-    }
+    return { distances, predecessors }
   }
-  dfs(callback) {
+  dfs(callback) { // Depth-First Search
     const stateMap = this._initState()
     for (let i = 0; i < this.vertices.length; i++) {
       const vertex = this.vertices[i]
@@ -78,23 +73,20 @@ class Graph {
   }
   _dfsVisit(vertex, stateMap, callback) {
     stateMap[vertex] = 'touched'
-    if (callback)
-      callback(vertex)
+    if (callback) callback(vertex)
     const neighbors = this.ajsList.get(vertex)
     for (let i = 0; i < neighbors.length; i++) {
       const neighbor = neighbors[i]
-      if (stateMap[neighbor] === 'inited') {
+      if (stateMap[neighbor] === 'inited') 
         this._dfsVisit(neighbor, stateMap, callback)
-      }
     }
     stateMap[vertex] = 'traversed'
   }
 
   _initState() {
-    const stateMap = []
-    for(let i = 0; i < this.vertices.length; i++) {
+    const stateMap = {}
+    for(let i = 0; i < this.vertices.length; i++) 
       stateMap[this.vertices[i]] = 'inited'
-    }
     return stateMap
   }
 }

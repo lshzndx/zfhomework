@@ -18,9 +18,8 @@ class HashTable {
   }
   put(key, value) {
     const position = this._loseloseHashCode(key)
-    if (!this.table[position]) {
-      this.table[position] = new LinkedList(key, value)
-    }
+    if (!this.table[position]) 
+      this.table[position] = new LinkedList()
     this.table[position].append(new ValuePair(key, value))
   }
   remove(key) {
@@ -31,9 +30,8 @@ class HashTable {
       while(current) {
         if (current.item.key === key) {
           list.remove(current)
-          if (list.isEmpty()) {
+          if (list.isEmpty()) 
             this.table[position] = undefined
-          }
           return true
         }
         current = current.next
@@ -47,9 +45,7 @@ class HashTable {
     if (list) {
       let current = list.getHead()
       while(current) {
-        if (current.key === key) {
-          return current.item.value
-        }
+        if (current.item.key === key) return current.item.value
         current = current.next
       }
     }
@@ -57,9 +53,8 @@ class HashTable {
   }
   _loseloseHashCode(key) {
     let code = 0
-    for(let i = 0; i < key.length; i++) {
+    for(let i = 0; i < key.length; i++) 
       code += key.charCodeAt(i)
-    }
     return code % 37
   }
 }
@@ -73,23 +68,19 @@ class HashTable2 {
   }
   put(key, value) {
     let position = this._loseloseHashCode(key)
-    if (!this.table[position]) {
+    if (!this.table[position]) 
       this.table[position] = new ValuePair(key, value)
-    }else {
-      while(this.table[position] !== undefined) {
+    else {
+      while(this.table[position] !== undefined) 
         position++
-      }
       this.table[position] = new ValuePair(key, value)
     }
   }
   get(key) {
     let position = this._loseloseHashCode(key)
-    while(this.table[position] !== undefined && this.table[position].key !== key) {
+    while(this.table[position] !== undefined && this.table[position].key !== key) 
       position++
-    }
-    if (this.table[position].key === key)
-      return this.table[position].value
-    
+    if (this.table[position].key === key) return this.table[position].value
     return undefined
   }
   remove(key) {
@@ -105,9 +96,8 @@ class HashTable2 {
   }
   _loseloseHashCode(key) {
     let code = 0
-    for(let i = 0; i < key.length; i++) {
+    for(let i = 0; i < key.length; i++) 
       code += key.charCodeAt(i)
-    }
     return code % 37
   }
   _djb2HashCode(key) {

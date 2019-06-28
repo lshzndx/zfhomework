@@ -17,29 +17,27 @@ class LinkedList {
     this.length = 0
     this.head = null
   }
-  append(item) {
-    if (!this.head) {
-      this.head = item
-      return
-    }else {
+  append(element) {
+    const item = new LinkedListItem(element)
+    if (!this.head) this.head = item
+    else {
       let current = this.head
-      while(current.next) {
+      while(current.next) 
         current = current.next
-      }
       current.next = item
     }
     this.length++
   }
-  insert(position, item) {
+  insert(position, element) {
+    const item = new LinkedListItem(element)
     if (position >=0 && position <= this.length) {
       if (position === 0) {
         item.next = this.head
         this.head = item
       }else {
         let count = 0, current = this.head
-        while(count++ < position - 1) {
+        while(count++ < position - 1) 
           current = current.next
-        }
         item.next = current.next
         current.next = item
       }
@@ -55,31 +53,28 @@ class LinkedList {
   indexOf(item) {
     let index = 0, current = this.head
     while(current) {
-      if (current.item === item) {
-        return index
-      }
+      if (current.item === item) return index
       current = current.next
       index++
     }
     return -1
   }
   removeAt(position) {
+    let current = this.head, removed = null
     if (position >= 0 && position < this.length) {
-      let current = this.head, removed = null
       if (position === 0) {
         removed = this.head
         this.head = this.head.next
       }else {
         let count = 0
-        while(count++ < position - 1) {
+        while(count++ < position - 1) 
           current = current.next
-        }
         removed = current.next
         current.next = current.next.next
       }
       this.length--
     }
-    return removed
+    return removed && removed.element
   }
   isEmpty() {
     return this.length === 0
@@ -123,10 +118,9 @@ class DoublyLinkedList {
           this.head = item
           this.tail = item
         }else {
-          this.head.next = item
-          item.prev = null
           item.next = current
           current.prev = item
+          this.head = item
         }
       }else {
         if (position === this.length) {
@@ -134,13 +128,12 @@ class DoublyLinkedList {
           item.prev = this.tail
           this.tail = item
         }else {
-          while(index++ < position - 1) {
+          while(index++ < position - 1) 
             current = current.next
-          }
           item.next = current.next
-          current.next.prev = item
-          current.next = item
           item.prev = current
+          current.next = item
+          current.next.prev = item
         }
       }
       this.length++
@@ -149,26 +142,28 @@ class DoublyLinkedList {
     return false
   }
   removeAt(position) {
+    let removed = null
     if (position >= 0 && position < this.length) {
-      let removed
       if (position === 0) {
         removed = this.head
         this.head = this.head.next
+        if (this.length === 1) this.tail = this.head
+        else this.head.prev = null
       }else if (position === this.length - 1) {
         removed = this.tail
         this.tail = this.tail.prev
+        this.tail.next = null
       }else {
         let index = 0, current = this.head
-        while(index++ < position - 1) {
+        while(index++ < position - 1) 
           current = current.next
-        }
         removed = current.next
         current.next = removed.next
         removed.next.prev = current
       }
       this.length--
     }
-    return null
+    return removed && removed.element
   }
 }
 

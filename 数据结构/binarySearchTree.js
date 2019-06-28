@@ -15,133 +15,91 @@ class BinarySearchTree {
     this.root = null
   }
   insert(key) {
-    const newNode = new Node(key)
-    if (!this.root)
-      this.root = newNode
-    this._insertNode(this, newNode)
+    const insertedNode = new Node(key)
+    if (!this.root) this.root = insertedNode
+    else this._insert(this.root, insertedNode)
   }
   remove(key) {
-    this.root = this._removeNode(this.root, key)
+    this.root = this._remove(this.root, key)
   }
   search(key) {
-    return this._searchNode(this.root, key)
+    return this._search(this.root, key)
   }
   min() {
-    return this._minNode(this.root)
+    return this._min(this.root)
   }
   max() {
-    return this._maxNode(this.root)
+    return this._max(this.root)
   }
   inOrderTraverse(callback) {
-    this._inOrderTraverseNode(this.root, callback)
+    this._inOrderTraverse(this.root, callback)
   }
   preOrderTraverse(callback) {
-    this._preOrderTraverseNode(this.root, callback)
+    this._preOrderTraverse(this.root, callback)
   }
   postOrderTraverse(callback) {
-    this._postOrderTraverseNode(this.root, callback)
+    this._postOrderTraverse(this.root, callback)
   }
-  _removeNode(node, key) {
-    if (!node) return null
-    if (key < node.key) {
-      node.left = this._removeNode(node.left, key)
-      return node
-    }
-    else if (ke > node.key) {
-      node.right = this._removeNode(node.right, key)
-      return node
-    }
+  _remove(node, key) {
+    if (!node) return node
+    if (key < node.key) return this._remove(node.left, key)
+    else if (key > node.key) return this._remove(node.right, key)
     else {
-      if (!node.left && !node.right) {
-        node = null
+      const successor = this._min(node.right)
+      if (successor) {
+        node.key = successor.key
+        this._remove(node.right, successor.key)
         return node
-      }
-      if (!node.left) {
-        node = node.right
-        return node
-      }
-      else if (!node.right) {
-        node = node.left
-        return node
-      }
-      const follow = this._findMinNode(node.right)
-      node.key = follow.key
-      node.right = this._removeNode(node.right, follow.key)
-      return node
-    }
-
-  }
-  _searchNode(node, key) {
-    if (node) {
-      if (key < node.left) {
-        return this._searchNode(node.left, key)
-      }else if (node.key === key) {
-        return true
       }else {
-        return this._searchNode(node.right, key)
+        return node.left
       }
     }
-    return false
   }
-  _maxNode(node) {
+  _search(node, key) {
     if (node) {
-      while(node.right) {
-        node = node.right
-      }
-      return node.key
+      if (key < node.key) return this._search(node.left, key)
+      else if (key > node.key) return this._search(node.right, key)
     }
-    return null
+    return node
   }
-  _findMinNode(node) {
-    if (node) {
-      while(node.left) {
-        node = node.left
-      }
-      return node
-    }
-    return null
+  _max(node) {
+    while(node && node.right)
+      node = node.right
+    return node
   }
-  _minNode(node) {
-    if (node) {
-      while(node.left) {
-        node = node.left
-      }
-      return node.key
-    }
-    return null
+  _min(node) {
+    while(node && node.left)
+      node = node.left
+    return node
   }
-  _preOrderTraverseNode(node, callback) {
+  _preOrderTraverse(node, callback) {
     if (node) {
-      callback(node.key)
-      this._preOrderTraverseNode(node.left, callback)
-      this._preOrderTraverseNode(node.right, callback)
+      callback(node)
+      this._preOrderTraverse(node.left, callback)
+      this._preOrderTraverse(node.right, callback)
     }
   }
-  _inOrderTraverseNode(node, callback) {
+  _inOrderTraverse(node, callback) {
     if (node) {
-      this._inOrderTraverseNode(node.left, callback)
-      callback(node.key)
-      this._inOrderTraverseNode(node.right, callback)
+      this._inOrderTraverse(node.left, callback)
+      callback(node)
+      this._inOrderTraverse(node.right, callback)
     }
   }
-  _postOrderTraverseNode(node, callback) {
+  _postOrderTraverse(node, callback) {
     if (node) {
-      this._postOrderTraverseNode(node.left, callback)
-      this._postOrderTraverseNode(node.right, callback)
-      callback(node.key)
+      this._postOrderTraverse(node.left, callback)
+      this._postOrderTraverse(node.right, callback)
+      callback(node)
     }
   }
-  _insertNode(node, newNode) {
-    if (newNode.key < node.key) {
-      if (!node.left)
-        node.left = newNode
-      else
-        this._insertNode(node.left, newNode)
+  _insert(node, insertedNode) {
+    if (insertedNode.key < node.key) {
+      if (!node.left) node.left = insertedNode
+      else this._insert(node.left, insertedNode)
     }else {
-      if (!node.right)
-        node.right = newNode
-      else
-        this._insertNode(node.right, newNode)
+      if (!node.right) node.right = insertedNode
+      else this._insert(node.right, insertedNode)
     }
   }
 }
