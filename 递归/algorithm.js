@@ -53,9 +53,9 @@ function cut(length) {
   let result = [length], subLength, nextResult
   for (let first = 1; first < length; first++) {
     subLength = length - first
-    nextResult = [first].concat(cut(subLength))
+    nextResult = [first, ...cut(subLength)]
     if (result.reduce((value, key) => value + priceTable[key], 0) < nextResult.reduce((value, key) => value + priceTable[key], 0))
-    result = nextResult
+      result = nextResult
   }
   return result
 }
