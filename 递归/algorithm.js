@@ -43,6 +43,23 @@ function pack(goods, capacity) {
   return preMax
 }
 /**
+ * 钢条切割问题
+ * @param {*} length key in keyof typeof priceTable
+ * priceTable: 价格表
+ */
+const priceTable = {1: 1, 2: 5, 3: 8, 4: 9, 5: 10, 6: 17, 7: 17, 8: 20, 9: 24, 10: 30}
+function cut(length) {
+  if (length === 1) return [length]
+  let result = [length], subLength, nextResult
+  for (let first = 1; first < length; first++) {
+    subLength = length - first
+    nextResult = [first].concat(cut(subLength))
+    if (result.reduce((value, key) => value + priceTable[key], 0) < nextResult.reduce((value, key) => value + priceTable[key], 0))
+    result = nextResult
+  }
+  return result
+}
+/**
  * 硬币最小找零
  * amount = 100 -> [50, 50]
  * amount = 20 -> [20]
