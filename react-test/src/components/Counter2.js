@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
+import { withRouter } from '../react-router-dom'
 import { connect } from '../react-redux'
 import actions from '../store/actions/actions2'
 class Counter2 extends Component {
   render() {
+    console.log(this.props.history, this.props.location)
     return (
       <div>
         <p>{this.props.number}</p>
@@ -14,4 +16,4 @@ class Counter2 extends Component {
   }
 }
 const mapStateToProps = state => state.counter2
-export default connect(mapStateToProps, actions)(Counter2)
+export default connect(mapStateToProps, actions)(withRouter(Counter2))
