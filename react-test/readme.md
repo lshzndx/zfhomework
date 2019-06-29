@@ -2,3 +2,4 @@
 - 测试redux
 - 测试react-redux
 - 测试redux-saga
+- 测试redux-thunk

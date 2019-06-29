@@ -1,3 +1,4 @@
+/*eslint-disable */
 /**
  * react-redux库的完整实现
  * by liushuai

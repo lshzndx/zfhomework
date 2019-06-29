@@ -8,5 +8,11 @@ export default {
   },
   increment1Async() {
     return {type: INCREMENT1ASYNC}
-  }  
+  },
+  ReduxThunk() {
+    return (dispatch, getState, api) => {
+      console.log(api)
+      setTimeout(() => dispatch({type: INCREMENT1}), 1000)
+    }
+  }
 }

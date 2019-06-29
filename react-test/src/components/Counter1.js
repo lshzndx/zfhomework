@@ -9,6 +9,7 @@ class Counter1 extends Component {
         <button onClick={this.props.increment1}>+</button>
         <button onClick={this.props.decrement1}>-</button>
         <button onClick={this.props.increment1Async}>Async+</button>
+        <button onClick={this.props.ReduxThunk}>ReduxThunk+</button>
       </div>
     )
   }

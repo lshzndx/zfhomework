@@ -1,3 +1,4 @@
+/*eslint-disable */
 /**
  * redux完整实现
  * by liushuai
