@@ -12,6 +12,7 @@ export default (reducer, preloadedState) => {
   const dispatch = action => {
     currentState = currentReducer(currentState, action)
     currentListeners.forEach(listener => listener())
+    return action
   }
   const subscribe = listener =>{
     currentListeners.push(listener)
