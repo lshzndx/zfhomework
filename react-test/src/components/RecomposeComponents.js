@@ -5,12 +5,26 @@ import {
   withReducer,
   defaultProps,
   componentFromProp,
-  withContext,
-  getContext,
   compose,
   lifecycle,
-  mapProps
- } from 'recompose'
+  mapProps,
+  renameProp,
+  withHandlers,
+  renameProps,
+  flattenProp,
+  withStateHandlers,
+  renderComponent,
+  branch,
+  renderNothing,
+  onlyUpdateForKeys,
+  onlyUpdateForPropTypes,
+  toRenderProps,
+  fromRenderProps,
+  getContext,
+  withContext,
+  withProps
+ } from '../recompose'
+
 
 const Counter = ({number1, setNumber}) => (
   <div>
@@ -63,11 +77,125 @@ const PostsListWithData = lifecycle({
 })(PostsList)
 
 
+const enhance4 = compose(
+  withState('value', 'updateValue', ''),
+  withHandlers({
+    onChange: props => event => {
+      props.updateValue(event.target.value)
+    },
+    onSubmit: props => event => {
+      event.preventDefault()
+      console.log(props.value)
+    }
+  })
+)
+const Form = enhance4(({value, onChange, onSubmit}) => (
+  <form onSubmit={onSubmit}>
+    <label>Value
+      <input type="text" value={value} onChange={onChange} />
+    </label>
+  </form>
+))
+
+
+const items = [{id: 1, title: '杨过'}, {id: 2, title: '小龙女'}]
+const enhance5 = compose(
+  withProps({'loadingDataFromApi': true, 'posts': items}),
+  renameProps({'loadingDataFromApi': 'isLoading', 'posts': 'items'})
+)
+const Posts = enhance5(({isLoading, items}) => (
+  <div>
+    <div>Loading: {isLoading ? 'yes' : 'no'}</div>
+    <ul>
+      {isLoading && items.map(({id, title}) => <li key={id}>{title}</li>)}
+    </ul>
+  </div>
+))
+
+
+const enhance6 = compose(
+  withProps({
+    object: { a: 'a', b: 'b' },
+    c: 'c'
+  }),
+  flattenProp('object')
+)
+const Abc = enhance6(({a, b, c}) => <p>{a}{b}{c}</p>)
+
+
+const Counter3 = withStateHandlers(
+  ({initialCounter = 0}) => ({counter: initialCounter}),
+  {
+    // incrementOn: ({counter}) => value => ({counter: counter + value}),
+    incrementOn: ({counter}) => value => {
+      console.log(222, counter, value)
+      return {counter: counter + value}
+    },
+    decrementOn: ({counter}) => value => ({counter: counter - value}),
+    resetCounter: (_, {initialCounter = 0}) => () => ({counter: initialCounter})
+  }
+)(
+  ({ counter, incrementOn, decrementOn, resetCounter }) => 
+    <div>
+      <p>{counter}</p>
+      <button onClick={() => incrementOn(2)}>Inc</button>
+      <button onClick={() => decrementOn(3)}>Dec</button>
+      <button onClick={resetCounter}>Reset</button>
+    </div>  
+)
+
+
+const Spinner = props => {
+  console.log(props)
+  return null
+}
+const spinnerWhileLoading = isLoading => branch(isLoading, renderComponent(Spinner))
+const enhance7 = spinnerWhileLoading(props => !(props.title && props.author && props.content))
+const Post = enhance7(({ title, author, content }) =>
+  <article>
+    <h1>{title}</h1>
+    <h2>By {author}</h2>
+    <div>{content}</div>
+  </article>
+)
+const Post2 = () => <Post {...{title: '侠客行', author: 'jinyong', content: '话说……'}} />
+
+
+const enhance8 = withProps(({ foo }) => ({ fooPlusOne: foo + 1 }))
+const Enhanced = toRenderProps(enhance8)
+
+const ToRenderProps = () => <Enhanced foo={1}>{({ fooPlusOne }) => <h1>{fooPlusOne}</h1>}</Enhanced>
+// renders <h1>2</h1>
+
+
+const App = props => {
+  console.log(props)
+  return null
+}
+const { Consumer: ThemeConsumer } = React.createContext({ theme: 'dark' })
+const { Consumer: I18NConsumer } = React.createContext({ i18n: 'en' });
+const RenderPropsComponent = ({ render, value }) => render({ value: 1 })
+
+const EnhancedApp = compose(
+  fromRenderProps(ThemeConsumer, ({ theme }) => ({ theme })),
+  fromRenderProps(I18NConsumer, ({ i18n }) => ({ locale: i18n })),
+  fromRenderProps(RenderPropsComponent, ({ value }) => ({ value }), 'render'),
+)(App);
+
+
+
 export {
   WithStateComponent,
   WithReducerComponent,
   ComponentFromPropComponent,
   ComponentFromPropComponent2,
   ComposedComponent,
-  PostsListWithData
+  PostsListWithData,
+  Posts,
+  Abc,
+  Counter3,
+  Post2,
+  ToRenderProps,
+  EnhancedApp,
+  Form
 }

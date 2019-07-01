@@ -4,7 +4,7 @@ import { Provider } from './react-redux'
 import { BrowserRouter as Router, Route, Link, Switch, Redirect } from './react-router-dom'
 import Counter1 from './components/Counter1'
 import Counter2 from './components/Counter2'
-import {AppWithContext2} from './components/RecomposeComponents'
+import {Post2} from './components/RecomposeComponents'
 import store from './store'
 reactDom.render(
   <Provider store={store}>
@@ -15,7 +15,7 @@ reactDom.render(
       <Switch>
         <Route path='/' component={Counter1} exact />
         <Route path='/counter2' component={Counter2} />
-        <Route path='/recompose' component={AppWithContext2} />
+        <Route path='/recompose' component={Post2} />
         <Redirect to="/" />
       </Switch>
     </Router>
