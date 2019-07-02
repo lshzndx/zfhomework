@@ -1,8 +1,10 @@
-exports.sign = function(val, secret) {
-  return crypto.createHmac(secret).update(val).digest('base64').replace(/\=+$/, '')
-}
-exports.unsign = function(val, secret) {
-  if (!val || !val.startsWith('s:')) return false
-  let raw = val.slice(2, val.lastIndexOf('.'))
-  return val.slice(2) === this.sign(raw, secret) ? raw : false
+const crypto = require('crypto')
+module.exports = {
+  sign(secret, key) {
+    return  `${key}.${crypto.createHmac('sha256', secret).update(key).digest('base64')}`
+  },
+  unsign(secret, value) {
+    const [key, signed] = value.split('.')
+    return signed === crypto.createHmac('sha256', secret).update(key).digest('base64')
+  }
 }
