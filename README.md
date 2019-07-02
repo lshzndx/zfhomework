@@ -22,3 +22,5 @@
 - 实现自己的redux-thunk并通过测试
 - 实现自己的react-router-dom并通过测试
 - 实现自己的recompose并通过测试
+- 实现自己的mobx并通过测试
+- 实现自己的mobx-react并通过测试
