@@ -36,7 +36,7 @@ function pack(goods, capacity) {
     subCapacity = capacity - g.weight
     if (subCapacity >= 0) {
       currentMax = [g, ...pack(goods.slice(0, i).concat(goods.slice(i + 1)), subCapacity)]
-      if ((preMax.length && preMax.reduce((value, next) => value + next.value, 0)) < (currentMax.length && currentMax.reduce((value, next) => value + next.value, 0))) 
+      if ((preMax.length && preMax.reduce((value, next) => value + next.value, 0)) < (currentMax.length && currentMax.reduce((value, next) => value + next.value, 0)))
         preMax = currentMax
     }
   })
@@ -58,6 +58,18 @@ function cut(length) {
       result = nextResult
   }
   return result
+}
+/**
+ * 最长公共子序列问题
+ * const X = ['A', 'B', 'C', 'B', 'D', 'A', 'B']
+ * const Y = ['B', 'D', 'C', 'A', 'B', 'A']
+ * console.log(lcs(X, Y)) -> [ 'B', 'C', 'B', 'A' ]
+ */
+function lcs (X, Y) {
+  if (X.length === 0 || Y.length === 0) return []
+  if (X[0] === Y[0]) return [X[0], ...lcs(X.slice(1), Y.slice(1))]
+  const result1 = lcs(X.slice(1), Y), result2 = lcs(X, Y.slice(1))
+  return result1.length > result2.length ? result1 : result2
 }
 /**
  * 硬币最小找零
