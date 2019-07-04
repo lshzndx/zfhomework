@@ -72,6 +72,37 @@ function lcs (X, Y) {
   return result1.length > result2.length ? result1 : result2
 }
 /**
+ * 活动选择问题
+ * @param {*} activities Array<{startTime: number, endTime: number}>
+ * 问题描述见《算法导论》414页
+ */
+function activity(activities) {
+  if (activities.length <= 1) return activities
+  let maxResult = [], nextMaxResult = []
+  activities.forEach(oneItem => {
+    const shorter = activities.filter(act => act.endTime <= oneItem.startTime)
+    const longer = activities.filter(act => act.startTime >= oneItem.endTime)
+    nextMaxResult = [oneItem, ...activity([...shorter, ...longer])]
+    if (nextMaxResult.length > maxResult.length)
+      maxResult = nextMaxResult
+  })
+  return maxResult
+}
+const activities = [
+  { startTime: 1, endTime: 4 },
+  { startTime: 3, endTime: 5 },
+  { startTime: 0, endTime: 6 },
+  { startTime: 5, endTime: 7 },
+  { startTime: 3, endTime: 9 },
+  { startTime: 5, endTime: 9 },
+  { startTime: 6, endTime: 10 },
+  { startTime: 8, endTime: 11 },
+  { startTime: 8, endTime: 12 },
+  { startTime: 2, endTime: 14 },
+  { startTime: 12, endTime: 16 }
+]
+// console.log(activity(activities)) -> [ { startTime: 1, endTime: 4 },{ startTime: 5, endTime: 7 },{ startTime: 8, endTime: 11 },{ startTime: 12, endTime: 16 } ]
+/**
  * 硬币最小找零
  * amount = 100 -> [50, 50]
  * amount = 20 -> [20]
