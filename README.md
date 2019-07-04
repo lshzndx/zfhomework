@@ -21,6 +21,7 @@
 - 用javascript实现常见的数据结构（图、二叉搜索树、红黑树、散列表、集合、字典、链表、队列、栈等）并通过测试
 - 实现自己的redux-thunk并通过测试
 - 实现自己的react-router-dom并通过测试
-- 实现自己的recompose并通过测试
 - 实现自己的mobx并通过测试
 - 实现自己的mobx-react并通过测试
+- 实现自己的recompose并通过测试
+- 实现自己的history库并通过测试
