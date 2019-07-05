@@ -1,5 +1,5 @@
 /**
- * withProps实现
+ * withProps 实现
  * by liushuai
  */
 import React from 'react'

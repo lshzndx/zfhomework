@@ -3,7 +3,7 @@
  * by liushuai
  */
 import React from 'react'
-export default test => BaseComponent => (
+export default test => BaseComponent => 
   class extends React.Component {
     shouldComponentUpdate(nextProps) {
       return test(this.props, nextProps)
@@ -12,4 +12,3 @@ export default test => BaseComponent => (
       return <BaseComponent {...this.props} />
     }
   }
-)

@@ -1,9 +1,9 @@
 /**
- * withState实现
+ * withState 实现
  * by liushuai
  */
 import React from 'react'
-export default (stateName, stateUpdaterName, initialState) => BaseComponent => (
+export default (stateName, stateUpdaterName, initialState) => BaseComponent => 
   class extends React.Component {
     state = {[stateName]: initialState}
     stateUpdater = updater => {
@@ -14,4 +14,3 @@ export default (stateName, stateUpdaterName, initialState) => BaseComponent => (
       return <BaseComponent {...{[stateName]: this.state[stateName], [stateUpdaterName]: this.stateUpdater, ...this.props}} />
     }
   }
-)

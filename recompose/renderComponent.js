@@ -1,5 +1,5 @@
 /**
- * renderComponent实现
+ * renderComponent 实现
  * by liushuai
  */
 import React from 'react'
