@@ -72,6 +72,74 @@ function lcs (X, Y) {
   return result1.length > result2.length ? result1 : result2
 }
 /**
+ * 最大子数组问题（股票最大收益问题）
+ * 问题描述见《算法导论》68页
+ * @param {*} arr Array<number>
+ * arr = [13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7]
+ * console.log(maxSubarray(arr)) -> [ 18, 20, -7, 12 ]
+ */
+function maxSubarray(arr) {
+  if (arr.length <= 1) return arr
+  let leftMax, middleMax, rightMax
+  const middle = Math.ceil(arr.length / 2)
+  leftMax = maxSubarray(arr.slice(0, middle))
+  rightMax = maxSubarray(arr.slice(middle))
+  middleMax = maxMiddleSubarray(arr, middle)
+  return max(leftMax, rightMax, middleMax)
+}
+function max(leftMax, rightMax, middleMax) {
+  let max = leftMax
+  if (rightMax.reduce((total, value) => (total += value, total), 0) > max.reduce((total, value) => (total += value, total), 0))
+    max = rightMax
+  if (middleMax.reduce((total, value) => (total += value, total), 0) > max.reduce((total, value) => (total += value, total), 0))
+    max = middleMax
+  return max
+}
+function maxMiddleSubarray(arr, middle) {
+  const leftResult = [], rightResult = []
+  arr.slice(0, middle).reduceRight((total, value, index) => {
+    total += value, leftResult.push({total, index})
+    return total
+  }, 0)
+  arr.slice(middle).reduce((total, value, index) => {
+    total += value, rightResult.push({total, index: index + middle})
+    return total
+  }, 0)
+  const leftIndex = leftResult.sort((a, b) => b.total - a.total)[0].index
+  const rightIndex = rightResult.sort((a, b) => b.total - a.total)[0].index
+  return arr.slice(leftIndex, rightIndex + 1)
+}
+/**
+ * 矩阵相乘
+ * @param {*} A Array<Array>
+ * @param {*} B Array<Array>
+ */
+function matrixMultiply(A, B) {
+  if (A.length === 1) return [[A[0] * B[0]]]
+  let C = []
+  let A00 = [], A01 = [], A10 = [], A11 = []
+  let B00 = [], B01 = [], B10 = [], B11 = []
+  let C00 = [], C01 = [], C10 = [], C11 = []
+  const middle = A.length / 2
+  A.forEach((cols, row) => {
+    if (row < middle) A00 = [...A00, cols.slice(0, middle)], A01 = [...A01, cols.slice(middle)]
+    else A10 = [...A10, cols.slice(0, middle)], A11 = [...A11, cols.slice(middle)]
+  })
+  B.forEach((cols, row) => {
+    if (row < middle) B00 = [...B00, cols.slice(0, middle)], B01 = [...B01, cols.slice(middle)]
+    else B10 = [...B10, cols.slice(0, middle)], B11 = [...B11, cols.slice(middle)]
+  })
+  C00 = matrixAdd(matrixMultiply(A00, B00), matrixMultiply(A01, B10))
+  C01 = matrixAdd(matrixMultiply(A00, B01), matrixMultiply(A01, B11))
+  C10 = matrixAdd(matrixMultiply(A10, B00), matrixMultiply(A11, B10))
+  C11 = matrixAdd(matrixMultiply(A10, B01), matrixMultiply(A11, B11))
+
+  C00.forEach((cols, row) => C.push(cols.concat(C01[row])))
+  C10.forEach((cols, row) => C.push(cols.concat(C11[row])))
+  return C
+}
+const matrixAdd = (A, B) => A.map((cols, row) => cols.map((value, col) => value + B[row][col]))
+/**
  * 活动选择问题
  * @param {*} activities Array<{startTime: number, endTime: number}>
  * 问题描述见《算法导论》414页
@@ -101,7 +169,7 @@ const activities = [
   { startTime: 2, endTime: 14 },
   { startTime: 12, endTime: 16 }
 ]
-// console.log(activity(activities)) -> [ { startTime: 1, endTime: 4 },{ startTime: 5, endTime: 7 },{ startTime: 8, endTime: 11 },{ startTime: 12, endTime: 16 } ]
+console.log(activity(activities)) // -> [ { startTime: 1, endTime: 4 },{ startTime: 5, endTime: 7 },{ startTime: 8, endTime: 11 },{ startTime: 12, endTime: 16 } ]
 /**
  * 硬币最小找零
  * amount = 100 -> [50, 50]
