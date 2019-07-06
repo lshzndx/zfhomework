@@ -8,6 +8,7 @@
  */
 function perm(arr) {
   if (arr.length <= 1) return [arr]
+
   return arr.map((a, i) => (perm([...arr.slice(0, i), ...arr.slice(i + 1)]).map(permItem => [a, ...permItem]))).reduce((permResultA, permResultB) => ([...permResultA, ...permResultB]))
 }
 /**
@@ -17,12 +18,14 @@ function perm(arr) {
 function queen() {
   const queen = [0, 1, 2, 3, 4, 5, 6, 7] // 数组中每一项的值代表行，其下标代表列
   const permedQueens = perm(queen) // 任意两两交换的所有组合
+
   const result = permedQueens.filter(queen => { // 只需要过滤正斜线和反斜线，不需要考虑行和列
     const slash = queen.map((row, col) => row - col)
     const backlash = queen.map((row, col) => row + col)
     if (new Set(slash).size < slash.length || new Set(backlash).size < backlash.length) return false
     return true
   }).map(queen => queen.map((row, col) => [row, col]))
+
   return result
 }
 /**
@@ -32,6 +35,7 @@ function queen() {
  */
 function pack(goods, capacity) {
   let preMax = [], currentMax = [], subCapacity
+
   goods.forEach((g, i) => {
     subCapacity = capacity - g.weight
     if (subCapacity >= 0) {
@@ -40,6 +44,7 @@ function pack(goods, capacity) {
         preMax = currentMax
     }
   })
+
   return preMax
 }
 /**
@@ -50,6 +55,7 @@ function pack(goods, capacity) {
 const priceTable = {1: 1, 2: 5, 3: 8, 4: 9, 5: 10, 6: 17, 7: 17, 8: 20, 9: 24, 10: 30}
 function cut(length) {
   if (length === 1) return [length]
+
   let result = [length], subLength, nextResult
   for (let first = 1; first < length; first++) {
     subLength = length - first
@@ -57,6 +63,7 @@ function cut(length) {
     if (result.reduce((value, key) => value + priceTable[key], 0) < nextResult.reduce((value, key) => value + priceTable[key], 0))
       result = nextResult
   }
+
   return result
 }
 /**
@@ -67,8 +74,11 @@ function cut(length) {
  */
 function lcs (X, Y) {
   if (X.length === 0 || Y.length === 0) return []
+
   if (X[0] === Y[0]) return [X[0], ...lcs(X.slice(1), Y.slice(1))]
+
   const result1 = lcs(X.slice(1), Y), result2 = lcs(X, Y.slice(1))
+
   return result1.length > result2.length ? result1 : result2
 }
 /**
@@ -80,11 +90,14 @@ function lcs (X, Y) {
  */
 function maxSubarray(arr) {
   if (arr.length <= 1) return arr
+
   let leftMax, middleMax, rightMax
   const middle = Math.ceil(arr.length / 2)
+
   leftMax = maxSubarray(arr.slice(0, middle))
   rightMax = maxSubarray(arr.slice(middle))
   middleMax = maxMiddleSubarray(arr, middle)
+
   return max(leftMax, rightMax, middleMax)
 }
 function max(leftMax, rightMax, middleMax) {
@@ -96,17 +109,19 @@ function max(leftMax, rightMax, middleMax) {
   return max
 }
 function maxMiddleSubarray(arr, middle) {
-  const leftResult = [], rightResult = []
+  let maxValue = Number.NEGATIVE_INFINITY, leftIndex, rightIndex
+
   arr.slice(0, middle).reduceRight((total, value, index) => {
-    total += value, leftResult.push({total, index})
+    if ((total += value) > maxValue) maxValue = total, leftIndex = index
     return total
   }, 0)
+
+  maxValue = Number.NEGATIVE_INFINITY
   arr.slice(middle).reduce((total, value, index) => {
-    total += value, rightResult.push({total, index: index + middle})
+    if ((total += value) > maxValue) maxValue = total, rightIndex = index + middle
     return total
   }, 0)
-  const leftIndex = leftResult.sort((a, b) => b.total - a.total)[0].index
-  const rightIndex = rightResult.sort((a, b) => b.total - a.total)[0].index
+
   return arr.slice(leftIndex, rightIndex + 1)
 }
 /**
@@ -120,7 +135,9 @@ function matrixMultiply(A, B) {
   let A00 = [], A01 = [], A10 = [], A11 = []
   let B00 = [], B01 = [], B10 = [], B11 = []
   let C00 = [], C01 = [], C10 = [], C11 = []
+
   const middle = A.length / 2
+
   A.forEach((cols, row) => {
     if (row < middle) A00 = [...A00, cols.slice(0, middle)], A01 = [...A01, cols.slice(middle)]
     else A10 = [...A10, cols.slice(0, middle)], A11 = [...A11, cols.slice(middle)]
@@ -129,6 +146,7 @@ function matrixMultiply(A, B) {
     if (row < middle) B00 = [...B00, cols.slice(0, middle)], B01 = [...B01, cols.slice(middle)]
     else B10 = [...B10, cols.slice(0, middle)], B11 = [...B11, cols.slice(middle)]
   })
+
   C00 = matrixAdd(matrixMultiply(A00, B00), matrixMultiply(A01, B10))
   C01 = matrixAdd(matrixMultiply(A00, B01), matrixMultiply(A01, B11))
   C10 = matrixAdd(matrixMultiply(A10, B00), matrixMultiply(A11, B10))
@@ -136,6 +154,7 @@ function matrixMultiply(A, B) {
 
   C00.forEach((cols, row) => C.push(cols.concat(C01[row])))
   C10.forEach((cols, row) => C.push(cols.concat(C11[row])))
+
   return C
 }
 const matrixAdd = (A, B) => A.map((cols, row) => cols.map((value, col) => value + B[row][col]))
@@ -143,9 +162,24 @@ const matrixAdd = (A, B) => A.map((cols, row) => cols.map((value, col) => value 
  * 活动选择问题
  * @param {*} activities Array<{startTime: number, endTime: number}>
  * 问题描述见《算法导论》414页
+ * const activities = [
+ *  { startTime: 1, endTime: 4 },
+ *  { startTime: 3, endTime: 5 },
+ *  { startTime: 0, endTime: 6 },
+ *  { startTime: 5, endTime: 7 },
+ *  { startTime: 3, endTime: 9 },
+ *  { startTime: 5, endTime: 9 },
+ *  { startTime: 6, endTime: 10 },
+ *  { startTime: 8, endTime: 11 },
+ *  { startTime: 8, endTime: 12 },
+ *  { startTime: 2, endTime: 14 },
+ *  { startTime: 12, endTime: 16 }
+ * ]
+ * console.log(activity(activities)) // -> [ { startTime: 1, endTime: 4 },{ startTime: 5, endTime: 7 },{ startTime: 8, endTime: 11 },* { startTime: 12, endTime: 16 } ]
  */
 function activity(activities) {
   if (activities.length <= 1) return activities
+
   let maxResult = [], nextMaxResult = []
   activities.forEach(oneItem => {
     const shorter = activities.filter(act => act.endTime <= oneItem.startTime)
@@ -154,22 +188,9 @@ function activity(activities) {
     if (nextMaxResult.length > maxResult.length)
       maxResult = nextMaxResult
   })
+
   return maxResult
 }
-const activities = [
-  { startTime: 1, endTime: 4 },
-  { startTime: 3, endTime: 5 },
-  { startTime: 0, endTime: 6 },
-  { startTime: 5, endTime: 7 },
-  { startTime: 3, endTime: 9 },
-  { startTime: 5, endTime: 9 },
-  { startTime: 6, endTime: 10 },
-  { startTime: 8, endTime: 11 },
-  { startTime: 8, endTime: 12 },
-  { startTime: 2, endTime: 14 },
-  { startTime: 12, endTime: 16 }
-]
-console.log(activity(activities)) // -> [ { startTime: 1, endTime: 4 },{ startTime: 5, endTime: 7 },{ startTime: 8, endTime: 11 },{ startTime: 12, endTime: 16 } ]
 /**
  * 硬币最小找零
  * amount = 100 -> [50, 50]
@@ -177,6 +198,7 @@ console.log(activity(activities)) // -> [ { startTime: 1, endTime: 4 },{ startTi
  */
 function makeChange(amount) {
   const coins = [1, 5, 10, 20, 50]
+
   let minResult = [], subAmount, subMinResult
   coins.forEach(value => {
     subAmount = amount - value
@@ -185,6 +207,7 @@ function makeChange(amount) {
     if (subAmount >= 0 && (subMinResult.length < minResult.length -1 || !minResult.length) && (subAmount.length || !subAmount))
       minResult = [value, ...subMinResult]
   })
+
   return minResult
 }
 /**
@@ -196,9 +219,12 @@ const flatten = arr => ( arr.reduce((flattened, cur) => ([...flattened, ...(Arra
  */
 function quickSort(arr) {
   if (arr.length <= 1) return arr
+
   const [first, ...rest] = arr
   const larger = [], smaller = []
+
   rest.forEach(value => value > first ? larger.push(value) : smaller.push(value))
+
   return [...quickSort(smaller), first, ...quickSort(larger)]
 }
 /**
@@ -210,16 +236,21 @@ function mergeSort(arr) {
     if (arr[0] > arr[1]) return [arr[1], arr[0]]
     return arr
   }
+
   const middle = Math.ceil(arr.length / 2)
+
   let left = arr.slice(0, middle)
   let right = arr.slice(middle)
+
   left = mergeSort(left)
   right = mergeSort(right)
+
   return merge(left, right)
 }
 function merge(left, right) {
-  let len = left.length + right.length
   const arr = []
+  let len = left.length + right.length
+
   let l, r
   while(len--) {
     l = left[0] === undefined ? Number.POSITIVE_INFINITY : left[0]
@@ -227,6 +258,7 @@ function merge(left, right) {
     if (l < r) arr.push(left.shift())
     else arr.push(right.shift())
   }
+
   return arr
 }
 /**
@@ -235,6 +267,7 @@ function merge(left, right) {
 const swap = (arr, i, j) => {[arr[i], arr[j]] = [arr[j], arr[i]]}
 function heapSort(arr) {
   buildMaxHeap(arr)
+
   for(let size = arr.length; size > 0; size--) {
     swap(arr, 0, size - 1)
     maxHeapify(arr, 0, size - 1)
@@ -242,6 +275,7 @@ function heapSort(arr) {
 }
 function buildMaxHeap(arr) {
   const bottom = Math.floor(arr.length / 2)
+
   for(let node = bottom - 1; node >= 0; node--) {
     maxHeapify(arr, node, arr.length)
   }
@@ -250,9 +284,11 @@ function maxHeapify(arr, node, size) {
   let max = node
   const l = node * 2 + 1
   const r = node * 2 + 2
+
   if(l < size && arr[l] > arr[max]) max = l
   if(r < size && arr[r] > arr[max]) max = r
   if(max === node) return
+
   swap(arr, node, max)
   maxHeapify(arr, max, size)
 }
@@ -347,12 +383,16 @@ const path = require('path')
 const cachedModule = {}
 function req(moduleId) {
   if (cachedModule[moduleId]) return cachedModule[moduleId]
+
   moduleId = path.join(__dirname, moduleId)
   const content = fs.readFileSync(moduleId)
   const module = {exports: {}}
   const fn = new Function('module', 'exports', '__dirname', '__filename', 'req', `${content}\r\nreturn module.exports`)
+
   fn(module, module.exports, __dirname, __filename, req)
+
   cachedModule[moduleId] = module.exports
+
   return module.exports
 }
 /**
@@ -369,6 +409,7 @@ function require(dependedModules, callback) {
     const dependencies = factory.dependencies
     return require(dependencies, factory)
   })
+
   return callback(...result)
 }
 /**
@@ -376,12 +417,15 @@ function require(dependedModules, callback) {
  */
 function deepClone(obj) {
   if (typeof obj !== 'object' || obj === null) return obj
+
   let clonedObj
   if (obj instanceof Date || obj instanceof RegExp)
     clonedObj = new obj.constructor(obj)
   else
     clonedObj = new obj.constructor
+
   Object.keys(obj).forEach(key => clonedObj[key] = deepClone(obj[key]))
+
   return clonedObj
 }
 /**
@@ -391,9 +435,12 @@ function deepCompare(a, b) {
   if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return a === b
   if (a instanceof Date || b instanceof Date) return (a.getTime && a.getTime()) === (b.getTime && b.getTime())
   if (a instanceof RegExp || b instanceof RegExp) return a.toString() === b.toString()
+
   const keysA = Object.keys(a)
   const keysB = Object.keys(b)
+
   if (keysA.length !== keysB.length) return false
+
   return keysA.every(key => deepCompare(a[key], b[key]))
 }
 /**
@@ -423,6 +470,7 @@ const isBalance = str => [...str].reduce((stack, cur) => (match(stack[stack.leng
 function* traverse(tree, ord) {
   let traversed = false
   let children = tree.children
+
   if (children) {
     for (let i = 0; i < children.length; i++) {
       if (ord === i) {
@@ -432,6 +480,6 @@ function* traverse(tree, ord) {
       yield* traverse(children[i], ord)
     }
   }
-  if(!traversed)
-    yield tree.v
+
+  if(!traversed) yield tree.v
 }
