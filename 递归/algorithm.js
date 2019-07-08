@@ -34,18 +34,19 @@ function queen() {
  * @param {*} capacity number
  */
 function pack(goods, capacity) {
-  let preMax = [], currentMax = [], subCapacity
+  if (capacity === 0) return []
 
+  let max = [], nextMax, subCapacity
   goods.forEach((g, i) => {
     subCapacity = capacity - g.weight
     if (subCapacity >= 0) {
-      currentMax = [g, ...pack(goods.slice(0, i).concat(goods.slice(i + 1)), subCapacity)]
-      if ((preMax.length && preMax.reduce((value, next) => value + next.value, 0)) < (currentMax.length && currentMax.reduce((value, next) => value + next.value, 0)))
-        preMax = currentMax
+      nextMax = [g, ...pack([...goods.slice(0, i), ...goods.slice(i + 1)], subCapacity)]
+      if (max.reduce((totalValue, g) => totalValue += g.value, 0) < nextMax.reduce((totalValue, g) => totalValue += g.value, 0))
+        max = nextMax
     }
   })
 
-  return preMax
+  return max
 }
 /**
  * 钢条切割问题
@@ -54,10 +55,10 @@ function pack(goods, capacity) {
  */
 const priceTable = {1: 1, 2: 5, 3: 8, 4: 9, 5: 10, 6: 17, 7: 17, 8: 20, 9: 24, 10: 30}
 function cut(length) {
-  if (length === 1) return [length]
+  if (length === 0) return []
 
-  let result = [length], subLength, nextResult
-  for (let first = 1; first < length; first++) {
+  let result = [], subLength, nextResult
+  for (let first = 1; first <= length; first++) {
     subLength = length - first
     nextResult = [first, ...cut(subLength)]
     if (result.reduce((value, key) => value + priceTable[key], 0) < nextResult.reduce((value, key) => value + priceTable[key], 0))
@@ -193,19 +194,19 @@ function activity(activities) {
 }
 /**
  * 硬币最小找零
- * amount = 100 -> [50, 50]
+ * amount = 7 -> [5, 1, 1]
  * amount = 20 -> [20]
  */
 function makeChange(amount) {
   const coins = [1, 5, 10, 20, 50]
 
-  let minResult = [], subAmount, subMinResult
+  let minResult = [], subAmount, nextMinResult
   coins.forEach(value => {
     subAmount = amount - value
-    if (subAmount >= 0)
-      subMinResult = makeChange(subAmount)
-    if (subAmount >= 0 && (subMinResult.length < minResult.length -1 || !minResult.length) && (subAmount.length || !subAmount))
-      minResult = [value, ...subMinResult]
+    if (subAmount >= 0) {
+      nextMinResult = [value, ...makeChange(subAmount)]
+      if (minResult.length === 0 || minResult.length > nextMinResult.length) minResult = nextMinResult
+    }
   })
 
   return minResult
@@ -213,7 +214,7 @@ function makeChange(amount) {
 /**
  * 数组展平
  */
-const flatten = arr => ( arr.reduce((flattened, cur) => ([...flattened, ...(Array.isArray(cur) ? flatten(cur) : [cur])]), []))
+const flatten = arr => ( arr.reduce((flattened, cur) => [...flattened, ...(Array.isArray(cur) ? flatten(cur) : [cur])], []))
 /**
  * 快速排序
  */
@@ -239,13 +240,10 @@ function mergeSort(arr) {
 
   const middle = Math.ceil(arr.length / 2)
 
-  let left = arr.slice(0, middle)
-  let right = arr.slice(middle)
+  const leftSorted = mergeSort(arr.slice(0, middle))
+  const rightSorted = mergeSort(arr.slice(middle))
 
-  left = mergeSort(left)
-  right = mergeSort(right)
-
-  return merge(left, right)
+  return merge(leftSorted, rightSorted)
 }
 function merge(left, right) {
   const arr = []
