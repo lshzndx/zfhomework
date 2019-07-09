@@ -42,17 +42,22 @@ class BinarySearchTree {
   }
   _remove(node, key) {
     if (!node) return node
-    if (key < node.key) return this._remove(node.left, key)
-    else if (key > node.key) return this._remove(node.right, key)
+    if (key < node.key) {
+      this._remove(node.left, key)
+      return node
+    }
+    else if (key > node.key) {
+      this._remove(node.right, key)
+      return node
+    }
     else {
       const successor = this._min(node.right)
       if (successor) {
         node.key = successor.key
         this._remove(node.right, successor.key)
         return node
-      }else {
-        return node.left
       }
+      return node.left
     }
   }
   _search(node, key) {
